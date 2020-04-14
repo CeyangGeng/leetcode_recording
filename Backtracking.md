@@ -24,29 +24,29 @@
   >
   > ```python
   > class Solution:
-  >     def subsets(self, nums: List[int]) -> List[List[int]]:
-  >         res = []
-  >         self.backtrack(nums, 0, res, [])
-  >         return res
-  >     def backtrack(self, nums, index, res, path):
-  >         res.append(path[:])
-  >         for i in range(index, len(nums)):
-  >             self.backtrack(nums, i + 1, res, path + [nums[i]])
+  >  def subsets(self, nums: List[int]) -> List[List[int]]:
+  >      res = []
+  >      self.backtrack(nums, 0, res, [])
+  >      return res
+  >  def backtrack(self, nums, index, res, path):
+  >      res.append(path[:])
+  >      for i in range(index, len(nums)):
+  >          self.backtrack(nums, i + 1, res, path + [nums[i]])
   > ```
   >
   > 77  Combinations
   >
   > ```python
   > class Solution:
-  >     def combine(self, n: int, k: int) -> List[List[int]]:
-  >         res = []
-  >         self.backtrack(n, k, 1, res, [])
-  >         return res
-  >     def backtrack(self, n, k, index, res, path):
-  >         if len(path) == k:
-  >             res.append(path[:])
-  >         for i in range(index, n + 1):
-  >             self.backtrack(n, k, i + 1, res, path + [i])
+  >  def combine(self, n: int, k: int) -> List[List[int]]:
+  >      res = []
+  >      self.backtrack(n, k, 1, res, [])
+  >      return res
+  >  def backtrack(self, n, k, index, res, path):
+  >      if len(path) == k:
+  >          res.append(path[:])
+  >      for i in range(index, n + 1):
+  >          self.backtrack(n, k, i + 1, res, path + [i])
   > ```
   >
   > 40. Combination Sum II (Master the method of removing the repeat result!)
@@ -158,6 +158,83 @@
   >                 l = len(res)
   >             for j in range(len(res) - l, len(res)):
   >                 res.append(res[j] + [nums[i]])
+  >         return res
+  > ```
+  >
+  > 46 Permutations
+  >
+  > ```python
+  > class Solution:
+  >     def permute(self, nums: List[int]) -> List[List[int]]:
+  >         res = []
+  >         self.backtrack(nums, res, [])
+  >         return res
+  >     def backtrack(self, nums, res, path):
+  >         size = len(nums)
+  >         if len(path) == size:
+  >             res.append(path)
+  >         for i in nums:
+  >             if i in path: continue
+  >             self.backtrack(nums, res, path + [i])
+  > -----------------------------------------------------------------
+  > # iterative version
+  > class Solution:
+  >     def permute(self, nums: List[int]) -> List[List[int]]:
+  >         res = [[]]
+  >         for n in nums:
+  >             temp = []
+  >             for r in res:
+  >                 for i in range(len(r) + 1):
+  >                     temp.append(r[:i] + [n] + r[i:])
+  >             res = temp
+  >         return res
+  > ```
+  >
+  > 47 Permutations II
+  >
+  > ```python
+  > class Solution:
+  >     def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+  >         res = []
+  >         nums.sort()
+  >         self.backtrack(nums, res, [], len(nums))
+  >         return res
+  >     def backtrack(self, nums, res, path, size):
+  >         if len(path) == size:
+  >             res.append(path)
+  >         for i in range(len(nums)):
+  >             if i > 0 and nums[i] == nums[i - 1]: continue
+  >             self.backtrack(nums[:i] + nums[i + 1:], res, path + [nums[i]], size)
+  > ----------------------------------------------------------------------
+  > #To remove duplicates, just avoid inserting a number after any of its duplicates.
+  > class Solution:
+  >     def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+  >         res = [[]]
+  >         for n in nums:
+  >             temp = []
+  >             for r in res:
+  >                 for j in range(len(r) + 1):
+  >                     temp.append(r[:j] + [n] + r[j:])
+  >                     if j < len(r) and n == r[j]: break
+  >             res = temp
+  >         return res
+  > --------------------------------------------------------------------
+  > Use counter to remove duplicates
+  > class Solution:
+  >     def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+  >         def backtrack(path, counter):
+  >             if len(path) == len(nums):
+  >                 res.append(path[:])
+  >             for i in counter:
+  >                 if counter[i] > 0:
+  >                     counter[i] -= 1
+  >                     path.append(i)
+  >                     backtrack(path, counter)
+  >                     counter[i] += 1
+  >                     path.pop()
+  >             
+  >         res = []
+  >         backtrack([], Counter(nums))
   >         return res
   > ```
   >
