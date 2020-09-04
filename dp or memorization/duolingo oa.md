@@ -369,5 +369,219 @@
 
      > 
 
-   
+9. - Description
 
+     > - 一个买本子题，大概描述如下：
+     >
+     > ​    比如有三家店第一家：一梱本子20元，30个本子一捆，第二家：一梱本子25元，40个本子一梱，第三家：一梱本子3元，2本一梱，问给100元最多能买多少本。
+
+   - Solution
+
+     > 1. backtrack:
+     >
+     >    ```python
+     >    class Solution:
+     >        def __init__(self, dic):
+     >            self.dic = dic
+     >            self.max_count = 0
+     >            self.res = []
+     >        def find(self, money, path, count):
+     >            if money < 0:
+     >                return
+     >            if money == 0:
+     >                if count > self.max_count:
+     >                    self.max_count = count
+     >                    self.res = path
+     >                return
+     >            for key, val in self.dic.items():
+     >                self.find(money - key, path + [(key, val)], count + val)
+     >    if __name__ == "__main__":
+     >        dic = {20:30, 25:40, 3:2}
+     >        s = Solution(dic)
+     >        s.find(100, [], 0)
+     >        print(s.max_count, s.res)
+     >    ```
+     >
+     > 2. dp: similar as coin change
+     >
+     >    ```
+     >    def helper(amount, dic):
+     >        dp = [0] * (amount + 1)
+     >        for key, val in dic.items():
+     >            for num in range(key, amount + 1):
+     >                dp[num] = max(dp[num], dp[num - key] + val)
+     >        return dp[-1]
+     >    ```
+
+10. - Question
+
+     > \697. Degree of an Array
+     >
+     > Given a non-empty array of non-negative integers `nums`, the **degree** of this array is defined as the maximum frequency of any one of its elements.
+     >
+     > Your task is to find the smallest possible length of a (contiguous) subarray of `nums`, that has the same degree as `nums`.
+     >
+     >  
+     >
+     > **Example 1:**
+     >
+     > ```
+     > Input: nums = [1,2,2,3,1]
+     > Output: 2
+     > Explanation: 
+     > The input array has a degree of 2 because both elements 1 and 2 appear twice.
+     > Of the subarrays that have the same degree:
+     > [1, 2, 2, 3, 1], [1, 2, 2, 3], [2, 2, 3, 1], [1, 2, 2], [2, 2, 3], [2, 2]
+     > The shortest length is 2. So return 2.
+     > ```
+     >
+     > **Example 2:**
+     >
+     > ```
+     > Input: nums = [1,2,2,3,1,4,2]
+     > Output: 6
+     > Explanation: 
+     > The degree is 3 because the element 2 is repeated 3 times.
+     > So [2,2,3,1,4,2] is the shortest subarray, therefore returning 6.
+     > ```
+     >
+     >  
+     >
+     > **Constraints:**
+     >
+     > - `nums.length` will be between 1 and 50,000.
+     > - `nums[i]` will be an integer between 0 and 49,999.
+
+   - Solution
+
+     > One pass, record the max frequency when traversing the array and update the max frequency and minimum length of the most frequent elements.
+     >
+     > ```python
+     > class Solution:
+     >     def findShortestSubArray(self, nums: List[int]) -> int:
+     >         first, count, res, degree = {}, {}, 0, 0
+     >         for i, num in enumerate(nums):
+     >             first.setdefault(num, i)
+     >             count[num] = count.get(num, 0) + 1
+     >             c = count[num]
+     >             if c > degree:
+     >                 degree = c
+     >                 res = i - first[num] + 1
+     >             elif c == degree:
+     >                 res = min(res, i - first[num] + 1)
+     >         return res
+     > ```
+
+11. - Question
+
+      > \264. Ugly Number II
+      >
+      > Medium
+      >
+      > 2062127Add to ListShare
+      >
+      > Write a program to find the `n`-th ugly number.
+      >
+      > Ugly numbers are **positive numbers** whose prime factors only include `2, 3, 5`. 
+      >
+      > **Example:**
+      >
+      > ```
+      > Input: n = 10
+      > Output: 12
+      > Explanation: 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 is the sequence of the first 10 ugly numbers.
+      > ```
+      >
+      > **Note:** 
+      >
+      > 1. `1` is typically treated as an ugly number.
+      > 2. `n` **does not exceed 1690**.
+
+    - Solution
+
+      > dp: the three pointer increase from 1 one by one
+      >
+      > ```python
+      > class Solution:
+      >     def nthUglyNumber(self, n: int) -> int:
+      >         dp = [1]
+      >         i2, i3, i5 = 0, 0, 0
+      >         while n > 1:
+      >             u2, u3, u5 = dp[i2] * 2, dp[i3] * 3, dp[i5] * 5
+      >             num = min(u2, u3, u5)
+      >             if num == u2: i2 += 1
+      >             if num == u3: i3 += 1
+      >             if num == u5: i5 += 1
+      >             dp.append(num)
+      >             n -= 1
+      >         return dp[-1]
+      > ```
+
+12. - Question
+
+      > 313. Super Ugly Number
+      >
+      > Write a program to find the `nth` super ugly number.
+      >
+      > Super ugly numbers are positive numbers whose all prime factors are in the given prime list `primes` of size `k`.
+      >
+      > **Example:**
+      >
+      > ```
+      > Input: n = 12, primes = [2,7,13,19]
+      > Output: 32 
+      > Explanation: [1,2,4,7,8,13,14,16,19,26,28,32] is the sequence of the first 12 
+      >              super ugly numbers given primes = [2,7,13,19] of size 4.
+      > ```
+      >
+      > **Note:**
+      >
+      > - `1` is a super ugly number for any given `primes`.
+      > - The given numbers in `primes` are in ascending order.
+      > - 0 < `k` ≤ 100, 0 < `n` ≤ 106, 0 < `primes[i]` < 1000.
+      > - The nth super ugly number is guaranteed to fit in a 32-bit signed integer.
+
+    - Solution
+
+      > ```python
+      > class Solution:
+      >     def nthSuperUglyNumber(self, n: int, primes: List[int]) -> int:
+      >         dp = [1]
+      >         dic = defaultdict(int)
+      >         while n > 1:
+      >             min_num = float('inf')
+      >             min_index = -1
+      >             for p in primes:
+      >                 temp = dp[dic[p]] * p
+      >                 if temp < min_num:
+      >                     min_num = temp
+      >             for p in primes:
+      >                 if dp[dic[p]] * p == min_num:
+      >                     dic[p] += 1
+      >             dp.append(min_num)
+      >             n -= 1
+      >         return dp[-1]
+      > ```
+
+13. - Question
+
+      > https://oss.1point3acres.cn/forum/201910/07/031723r695ifoa95tx0u0t.png
+
+    - Solution
+
+      > ```python
+      > def helper(nums):
+      >     size = len(nums)
+      >     dic = {}
+      >     for i in range(1, size):
+      >         for j in range(nums[i - 1], nums[i] + 1):
+      >             dic[j] = dic.get(j, 0) + 1
+      >     max_frequency = 0
+      >     res = 0
+      >     for key, val in dic.items():
+      >         if val > max_frequency:
+      >             res = key
+      >             max_frequency = val
+      >     return res           
+      >         
+      > ```
