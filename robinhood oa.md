@@ -638,8 +638,119 @@
 
     > ![image-20200907003305306](C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20200907003305306.png)
     >
-    > ```
+    > ```python
+    > ######################first wrong thought##############################
+    > # find all the subarray that exactly meet the requirements
+    > # then list all the possible combination
+    > # However, the sliding window could not find all the possible subarray
+    > from collections import defaultdict
+    > def helper(arr):
+    >     res = []
+    >     left, right = 0, 0
+    >     counter = dict()
+    >     size = len(arr)
+    >     frequency_less_than_two = set()
+    >     while right < size:
+    >         find = False
+    >         if arr[right] not in counter:
+    >             counter[arr[right]] = 1
+    >             frequency_less_than_two.add(arr[right])
+    >         else:
+    >             counter[arr[right]] += 1
+    >         if counter[arr[right]] == 2:
+    >             frequency_less_than_two.remove(arr[right])
+    >         while not frequency_less_than_two:
+    >             find = True
+    >             counter[arr[left]] -= 1
+    >             if counter[arr[left]] < 2:
+    >                 frequency_less_than_two.add(arr[left])
+    >             left += 1
+    >         if find:
+    >             res.append([left - 1, right])
+    >         right += 1
+    >     res.sort()
+    >     print(res)
+    >     ret = combine(res)
+    >     return ret
+    > def combine(nums):
+    >     visit = set()
+    >     memo = dict()
+    >     size = len(nums)
+    >     def helper(index):
+    >         if index == size - 1:
+    >             return 1
+    >         count = 0
+    >         for j in range(index + 1, size):
+    >             if nums[j][0] <= nums[index][1]:
+    >                 count += memo[j]
+    >         return count + 1
     > 
-    > ```
-    >
+    >     for i in range(size - 1, -1, -1):
+    >         memo[i] = helper(i)
+    >     num = 0
+    >     for i in range(size):
+    >         num += memo[i]
+    >     return num
+    > if __name__ == '__main__':
+    >     arr = [1,2,1,2,3,4,2,3,4]
+    >     r = helper(arr)
+    >     print(r)
+    >  #############################final solution############################
+    >  '''
+    >  So we need to traverse all the possible subarray by using two nested for loop. While traversing, we should also maintain a dictionary to record all the number frequency to determine whether this subarray meets the needs.
+    >  '''
+    > from collections import defaultdict
+    > def find(nums):
+    >     size = len(nums)
+    >     i = j = 0
+    >     dic = defaultdict(int)
+    >     less_than_two_times = set()
+    >     res = 0
+    >     while i < size:
+    >         while i <= j < size:
+    >             num = nums[j]
+    >             if i % 2 == 0:
+    >                 dic[num] += 1
+    >                 if dic[num] == 1:
+    >                     less_than_two_times.add(num)
+    >                 elif dic[num] == 2:
+    >                     less_than_two_times.remove(num)
+    >                 if not less_than_two_times:
+    >                     res += 1
+    >                 j += 1
+    >             else:
+    >                 dic[num] -= 1
+    >                 if dic[num] == 1:
+    >                     less_than_two_times.add(num)
+    >                 if dic[num] == 0:
+    >                     less_than_two_times.remove(num)
+    >                 if not less_than_two_times and i != j:
+    >                     res += 1
+    >                 j -= 1
+    >         if i & 1:
+    >             j = i + 1
+    >         elif i & 1 == 0:
+    >             n = nums[i]
+    >             dic[n] -= 1
+    >             if dic[n] == 1:
+    >                 less_than_two_times.add(n)
+    >             if dic[n] == 0:
+    >                 less_than_two_times.remove(n)
+    >             if not less_than_two_times and i != j - 1:
+    >                 res += 1
+    >             j = size - 1
+    >         i += 1
+    >     return res
     > 
+    > if __name__ == "__main__":
+    >     nums = [1,2,1,2,3,4,4,2,1,3]
+    >     r = find(nums)
+    >     print(r)
+    > 
+    > 
+    > 
+    >  
+    > ```
+
+19. 
+
