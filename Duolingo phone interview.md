@@ -5,7 +5,7 @@
   1. Introduction: 
 
      ```
-     I am an incoming graduate student at Carnegie Mellon University for 2021 spring semester, majoring in Electrical and Computer Engineering. I will graduate in May 2022. I have CPT in 2021 summer intern. I will require sponsor H1-B after graduation.
+     I am an incoming graduate student at Carnegie Mellon University for 2021 spring semester, majoring in Electrical and Computer Engineering. I will graduate in May 2022. 
      I Interned at IQIYI Artificial Intelligence Accelerating Department for six months mainly responsible for AI web application development and AI model optimization. Web application jobs honed my skills of both back-end and front-end technology like Tornado, Django, HTML,CSS and Javascript. Model optimization experience deepened my understanding of different deep learning frameworks such as Pytorch, Keras and Tensorflow. Besides, I did many python、C、C++  application optimization using inference engine. In addition to the technology background, I am very creative and quick-thinking. The web application job is fast-paced in our department. I adapted to this rhythm of work very well and grasped the integration testing, CI/CD procedure. I can always creatively find out the most efficient way to solve problems. For example, I allocated heap memory dynamically using segregated free list which promoted throughput greatly comparing with original array based allocation. I have strong logical thinking ability reflected in my mathematics competition awards and sorting out my job logics. 
      With the technical background, creativity and quick mind, I think I am a great fit for the 2021 summer software development engineer internship.
      ```
@@ -24,7 +24,7 @@
      During my internship, I did a lot of challenging projects. Here I want to talk about the most recent one. Here is the thing. I optimized a model which integrates three module. The three modules function differently. The first module uses the tensorflow framework to pre-filter some unqualifies pictures. The second module use the pytorch framework and resne50 model to extract the feature map. The thid module used the keras framework. I need to optimize these three modules separately because they use different framework. Besides, at the beginning, I was not familiar with the pytorch framwork and the topologies of resnet50 model. During the conversion from the pytorch framework to the onnx framework, a lot errors happened. To solove this problem, I googles a lot of related material, raise questions on the stack overflow forum and read the source code of the resnet50 model. So after these efforts, I successfully tackled the problem all by myself. After solving this problem, I got a great sense of achievement. 
      ```
 
-     
+  4. Conflict 
 
 - question to ask
 
@@ -36,7 +36,7 @@
 
   4. When I applied for the software engineer intern, I didn't see very specific requirements on the application website like the front-end, back-end or android app development. I 'm wondering what will I do if I am fortunate enough to be admitted?
 
-  5. Last time, you sent me the intern blog which is filled with posts from the past interns.
+  5. Last time, you sent me the intern blog which is filled with posts from the past interns. I notice that some people without android app development experience before did android app development jobs.  I am wondering
 
   6. What's the most attracting point of Duolingo?
 
