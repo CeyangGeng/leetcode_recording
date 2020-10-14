@@ -1,5 +1,7 @@
 # amazon oa2
 
+here is the link of review of oa2: https://leetcode.com/discuss/interview-question/344650/Amazon-Online-Assessment-Questions
+
 - <img src="https://oss.1point3acres.cn/forum/202009/30/181755dle0x8wblk09j01w.png" alt="img" style="zoom:50%;" />
 
   ```python
