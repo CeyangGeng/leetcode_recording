@@ -2747,4 +2747,41 @@ if __name__ == "__main__":
       return trie
   ```
 
-- 
+- https://leetcode.com/discuss/interview-question/893279/
+
+  ##### Solution
+
+  ```python
+  def find(numOrders, requirements, flaskTypes, totalMarks, markings):
+      countPerType = totalMarks // flaskTypes
+      min_diff = float('inf')
+      min_index = -1
+      for k in range(0, totalMarks, countPerType):
+          i, j = k, 0
+          diff_sum = 0
+          while k <= i < k + countPerType and j < numOrders:
+              if markings[i][1] >= requirements[j]:
+                  diff_sum += markings[i][1] - requirements[j]
+                  j += 1
+              else:
+                  i += 1
+          if j == numOrders:
+              if diff_sum < min_diff:
+                  min_diff = diff_sum
+                  min_index = markings[k][0]
+      return min_index
+  if __name__ == "__main__":
+      numOrders = 4
+      requirements = [4,6,6,7]
+      flaskTypes = 3
+      totalMarks = 9
+      markings = [[0, 3], [0, 5], [0, 7], [1, 6], [1, 8], [1, 9], [2, 3], [2, 5], [2, 6]]
+      r = find(numOrders, requirements, flaskTypes, totalMarks, markings)
+      print(r)
+  
+  
+  
+  
+  ```
+
+  
