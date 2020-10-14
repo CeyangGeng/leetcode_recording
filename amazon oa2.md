@@ -601,32 +601,30 @@
 
   Solution:
 
-  ```
-  def count_items(s, start_indices, end_indices):
-      size = len(start_indices)
-      left, right, count = [0] * size, [0] * size, [0] * size
-      pre_left, post_right, total = -1, -1, 0
-      for i in range(size):
-          if s[i] == '|':
-              pre_left = i
+  ```python
+  def item_in_containers(s, start_indices, end_indices):
+      size_s = len(s)
+      star, left, right = [0] * size_s, [0] * size_s, [0] * size_s
+      count, pre_left, post_right = 0, -1, -1
+      for i in range(size_s):
+          if s[i] == '*': count += 1
+          star[i] = count
+      for i in range(size_s):
+          if s[i] == '|': pre_left = i
           left[i] = pre_left
-      for j in range(size - 1, -1, -1):
-          if s[j] == '|':
-              post_right = j
-          right[j] = post_right
-      for k in range(size):
-          if s[k] == '*':
-              total += 1
-          count[k] = total
-      res = [0] * size
+      for i in range(size_s - 1, -1, -1):
+          if s[i] == '|': post_right = i
+          right[i] = post_right
+      size = len(start_indices)
+      res = []
       for i in range(size):
-          start, end = start_indices[i] - 1, end_indices[i] - 1
-          a, b = count[start], count[end]
-          if (a >= b): res[i] = 0
-          else: res[i] = count[b] - count[a]
+          s, e = start_indices[i] - 1, end_indices[i] - 1
+          ss, ee = right[s], left[e]
+          if ss >= ee: return 0
+          res.append(star[ee] - star[ss])
       return res
   ```
-
+  
 - ![image-20201012142520988](C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20201012142520988.png)
 
   ```python
@@ -2518,6 +2516,233 @@ if __name__ == "__main__":
       r = favorite_song(userSongs, songGenres)
       print(r)
   
+  ```
+
+- https://assets.leetcode.com/users/images/d290f3fb-fde2-4e1e-9c5d-a7f74b111812_1600553631.8503802.png
+
+  ##### Solution
+
+  ```python
+  def data_center(size_0, n, mult, offset, mod_val, max_area):
+      wall_lengths = list()
+      possible_combinations = 1 if size_0 * size_0 <= max_area else 0
+      wall_lengths.append(size_0)
+      previous_len = size_0
+      while len(wall_lengths) <= n:
+          cur_count = 0
+          cur_len = ((mult * previous_len + offset) % mod_val) + 1 + previous_len
+          previous_len = cur_len
+          if cur_len * cur_len <= max_area:
+              cur_count += 2 * len(wall_lengths) + 1
+          else:
+              cur_count += 2 * (binary_search(wall_lengths, cur_len, max_area) + 1)
+          wall_lengths.append(cur_len)
+          possible_combinations += cur_count
+          if cur_count == 0: break
+      return possible_combinations
+  def binary_search(arr, cur_length, max_area):
+      left, right = 0, len(arr) - 1
+      while left <= right:
+          mid = left + (right - left) // 2
+          if cur_length * arr[mid] < max_area:
+              left += 1
+          elif cur_length * arr[mid] > max_area:
+              right -= 1
+          else:
+              return mid
+      return left - 1
+  if __name__ == "__main__":
+      r = data_center(2,3,3,3,2,15)
+      print(r)
+  
+  
+  
+  
+  ```
+
+- **Input**
+  The input to the function/method consists of five arguments - **numCompetitors**, an integer representing the number of competitors for the Echo device;
+  **topNCompetitors**, is an integer representing the maximum number of competitors that Amazon wants to identify;
+  **competitors**, a list of strings representing the competitors;
+  **numReviews**, an integer representing the number of reviews from different websites that are identified by the automated webcrawler;
+  **reviews**, a list of string where each element is a string that consists of space-separated words representing user reviews.
+
+  
+
+  **Output**
+  Return a list of strings representing Amazon's top N competitors in order of most frequently mentioned to least frequent.
+
+  
+
+  **Note**
+  The comparison of strings is case-insensitive. If the value of topNCompetitors is more than the number of competitors discussed in the reviews then output the names of only the competitors mention.
+  If competitors have the same count (e.g. newshop=2, shopnow=2, mymarket=4), sort alphabetically. topNCompetitors=2, Output=[mymarket, newshop]
+
+  
+
+  **Example**
+  Input:
+  numCompetitors=6
+  topNCompetitors = 2
+  competitors = [newshop, shopnow, afashion, fashionbeats, mymarket, tcellular]
+  numReviews = 6
+  reviews = [
+  "newshop is providing good services in the city; everyone should use newshop",
+  "best services by newshop",
+  "fashionbeats has great services in the city",
+  "I am proud to have fashionbeats",
+  "mymarket has awesome services",
+  "Thanks Newshop for the quick delivery"]
+
+  
+
+  **Output**
+  ["newshop", "fashionbeats"]
+
+  
+
+  **Explanation**
+  "newshop" is occurring in 3 different reviews. "fashionbeats" is occuring in 2 different user reviews and "mymarket" is occurring in only 1 review.
+
+  
+
+  ```python
+  public List<string> TopNumCompetitors(int numCompetitors,
+                                          int topNCompetitors,
+                                          List<string> competitors,
+                                          int numReviews, List<string> reviews)
+  {
+  	// Your code here
+  }
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import defaultdict
+  def num_of_competitors(numCompetitors, topNCompetitors, competitors, numReviews, reviews):
+      competitors = set(competitors)
+      dic = defaultdict(int)
+      for review in reviews:
+          review = review.lower()
+          words = review.split(' ')
+          visited = set()
+          for word in words:
+              if word in competitors and word not in visited:
+                  visited.add(word)
+                  dic[word] += 1
+      temp = sorted(dic.items(), key = lambda x: (x[1], x[0]), reverse = True)
+      return [t[0] for t in temp[:topNCompetitors]]
+  ```
+
+- Given a series of child-parent relations like
+  ['dog', 'mammal'],
+  ["shark, fish"],
+  ["cat", "mammal"],
+  ["mammal", "animal"],
+  ['fish', 'animal']
+
+  
+
+  capture the relationship of these entities so you can print the
+  relationships in a *nested format* at any point.
+
+  
+
+  Notes:
+
+  
+
+  - Siblings may be returned in any order.
+  - Your add function will be called multiple times to add relationships
+
+  
+
+  Example Outputs (any are valid):
+
+  
+
+  ```python
+  Option 1:
+  animal
+    fish
+      shark
+    mammal
+      dog
+      cat
+  
+  Option 2:
+  {
+    "value": "animal",
+    "children": [
+      {
+        "value": "fish",
+        "children": [
+          {
+            "value": "shark",
+            "children": []
+          }
+        ]
+      },
+      {
+        "value": "mammal",
+        "children": [
+          {
+            "value": "dog",
+            "children": []
+          },
+          {
+            "value": "cat",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+  
+  Option 3:
+  {
+    "animal": {
+      "fish": {
+        "shark": {}
+      },
+      "mammal": {
+        "cat": {},
+        "dog": {}
+      }
+    }
+  }
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import defaultdict
+  def child_parent_relations(relations):
+      degree_dic = defaultdict(int)
+      parent_child_dic = defaultdict(list)
+      node_set = set()
+      for relation in relations:
+          print(relation)
+          child, parent = relation
+          node_set.add(child)
+          node_set.add(parent)
+          degree_dic[child] += 1
+          parent_child_dic[parent].append(child)
+      root = None
+      for node in node_set:
+          if degree_dic[node] == 0:
+              root = node
+      def dfs(root, ti):
+          if not root: return
+          t = ti.setdefault(root, {})
+          for neighbor in parent_child_dic[root]:
+              degree_dic[neighbor] -= 1
+              if degree_dic[neighbor] == 0:
+                  dfs(neighbor, t)
+      trie = {}
+      dfs(root, trie)
+      return trie
   ```
 
 - 
