@@ -1135,12 +1135,14 @@
   def search(string, num):
       i, j, count, size = 0, 0, 0, len(string)
       dic = defaultdict(int)
-      res = set()
+      res = set()A new team at Amazon is doing an internal beta test 
       while j < size:
           alpha = string[j]
           dic[alpha] += 1
           if dic[alpha] == 2:
               count += 1
+          if dic[string[j]] > 2:
+              i = j
           if j - i + 1 == num:
               if count == 1: res.add(string[i : j + 1])
               beta = string[i]
@@ -1153,9 +1155,9 @@
   if __name__ == "__main__":
       string = "wawaglknagagwunagkwkwagl"
       res = search(string, 4)
-      print(list(res))
+    print(list(res))
   ```
-
+  
 - \200. Number of Islands
 
   Medium
@@ -1233,7 +1235,1289 @@
           return Counter([w for w in words if w not in banned]).most_common(1)[0][0]
   ```
 
+- <img src="C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20201013092726230.png" alt="image-20201013092726230" style="zoom:50%;" />
+
+
+
+
+
+<img src="C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20201013092736728.png" alt="image-20201013092736728" style="zoom:50%;" />
+
+```python
+#Sort the box mainly according to the unitSize.
+import heapq
+def pack(num, boxes, unitSize, unitPerBox, truckSize):
+    size = len(unitPerBox)
+    for i in range(size):
+        unitPerBox[i] *= -1
+    combine = list(zip(unitPerBox, boxes))
+    heapq.heapify(combine)
+    res = 0
+    while truckSize > 0 and combine:
+        a, b = heapq.heappop(combine)
+        a *= -1
+        count = min(truckSize, b)
+        truckSize -= count
+        res += count * a
+    return res
+
+```
+
+
+
+- Amazon is performing an analysis on the computers at one of its offices.
+
+  
+
+  The computers are spaced along a single row. The analysis is performed in the following way:
+  Choose a contiguous segment of a certain number of computers, starting from the beginning of the row.
+
+  
+
+  Analyze the available hard disk space on each of the computers. Determine the minimum available disk space within this segment. After performing these steps for the first segment, it is then repeated for the next segment, continuing this procedure until the end of the row (i.e. if the segment size is 4, computers 1 to 4 would be analyzed, then 2 to 5, etc.)
+
+  
+
+  ***Given this analysis procedure, write an algorithm to find the maximum available disk space among all the minima that are found during the analysis.***
+
+  
+
+  ##### Input:
+
+  
+
+  The input to the function/method consists of 3 arguments:
+  ***numComputer***, an integer representing the number of computers;
+  ***hardDiskSpace***, a list of integers representing the hard disk space of the computers;
+  ***segmentLength***, an integer representing the length of the contiguous segment of computers to
+  be consider in each iterations.
+
+  
+
+  ##### Output:
+
+  
+
+  Return an integer representing the maximum available disk space among all the minima that are found during the analysis.
+
+  
+
+  ##### Constraints:
+
+  
+
+  1 ≤ numComputer ≤ 10^6
+  1 ≤ segmentLength ≤ numComputer
+  1 ≤ hardDiskSpace[i] ≤ 10^9
+  0 ≤ i < numComputer
+
+  
+
+  #### Example:
+
+  ##### Input:
+
+  
+
+  numComputer = 3
+  hardDiskSpace = [8,2,4]
+  segmentLength = 2
+
+  
+
+  ##### Output:
+
+  
+
+  2
+
+  
+
+  ##### Explanation:
+
+  
+
+  In this array of computers, the subarrays of size 2 are [8,2] and [2,4].
+  Thus, the initial analysis returns 2 and 2 because those are the minima for the segmenets.
+  Finally the maximum of these values is 2.
+  Therefore, the answer is 2.
+
+  ###### Solution
+
+  ```python
+  #find consecutive smallest using monotonic queue
+  from collections import deque
+  def disk_space(numComputer, hardDiskSpace, segmentLength):
+      max_min_space = min(hardDiskSpace[:segmentLength])
+      dq = deque()
+      for i in range(numComputer):
+          if dq and dq[0] < i - segmentLength + 1:
+              dq.popleft()
+          while dq and hardDiskSpace[dq[-1]] > hardDiskSpace[i]:
+              dq.pop()
+          dq.append(i)
+          if i >= segmentLength - 1:
+              max_min_space = max(max_min_space, dq[0])
+      return max_min_space
+  ```
+
+- Amazon has Fulfillment Centers in multiple cities within a large geographic region. The cities are arranged on a group that has been divided up like an ordinary Cartesian plane. Each city is located at an integral(x,y) coordinate intersection. City names and locations are given in the form of three arrays: c,x, and y, which are aligned by the index to provide the city name (c[i]), and its coordinates, (x[i],y[i]).
+
+  
+
+  **Write an algorithm to determine the name of the nearest city that shares an x or a y coordinate with the queried city. If no cities share an x or y coordinate, return none. If two cities have the same distance to the queried city, q[i], consider the one with an alphabetically smaller name (e.e 'ab' < 'aba' < 'abb') as the closest choice.**
+
+  
+
+  The distance is denoted on a Euclidean plan: the difference in x plus the difference in y.
+
+  
+
+  **Input**
+  the input to the function/method consists of six arguments:
+  ***numOfCities***, an integer representing the number of cities;
+  ***cities***, a list of strings representing the names of each city[i];
+  ***xCoordinates***, a list of integers representing the X-coordinates of each city[i];
+  ***yCoordinates***, a list of integers representing the Y-coordinates of each city[i];
+  ***numOfQueries***, an integer representing the number of queries;
+  ***queries***, a list of strings representing the names of the queried cities.
+
+  
+
+  **Output**
+  Return a list of strings representing the name of the nearest city that shares either an x or a y coordinate with the queried city.
+
+  
+
+  **Constraints**
+  1 ≤ numOfCities, numOfQueries ≤ 10^5
+  1 ≤ xCoordinates[i], yCoordinates[i] <= 10^9
+  1 ≤ length of queries[i] and cities[i] ≤ 10
+
+  
+
+  **Note**
+  Each character of all c[i] and q[i] is in the range ascii[a-z, 0-9,-]
+  All city name values, c[i] are unique. All cities have unique coordinates.
+
+  
+
+  **Example:**
+
+  
+
+  **Input:**
+
+  
+
+  numOfCities = 3
+  cities = ["c1", "c2", "c3"]
+  xCoordinates = [3,2,1]
+  yCoordinates = [3,2,3]
+  numOfQueries = 3
+  queries = ["c1", "c2", "c3"]
+
+  ##### Solution
+
+  ```python
+  #time complexity: O(nq)
+  def get_distance(x, y, new_x, new_y):
+      return abs(x - new_x) + abs(y - new_y)
+  def search(numOfCities, cities, xCoordinates, yCoordinates, numOfQueries, queries):
+      if not queries: return []
+      res = []
+      for query in queries:
+          index = cities.index(query)
+          x, y = xCoordinates[index], yCoordinates[index]
+          nearest_city = None
+          min_dis = float('inf')
+          for i in range(numOfCities):
+              new_x, new_y = xCoordinates[i], yCoordinates[i]
+              if i != index and (new_x == x or new_y == y):
+                  cur_distance = get_distance(x, y, new_x, new_y)
+                  if cur_distance < min_dis:
+                      min_dis = cur_distance
+                      nearest_city = cities[i]
+                  elif cur_distance == min_dis:
+                      nearest_city = min(nearest_city, cities[i])
+          res.append(nearest_city)
+      return res
+  if __name__ == "__main__":
+      numOfCities = 3
+      cities = ["c1", "c2", "c3"]
+      xCoordinates = [3, 2, 1]
+      yCoordinates = [3, 2, 3]
+      numOfQueries = 3
+      queries = ["c1", "c2", "c3"]
+      res = search(numOfCities, cities, xCoordinates, yCoordinates, numOfQueries, queries)
+      print(res)
+      
+  ############################## time complexity qnlog(n), using heap###############
+  from collections import defaultdict
+  import heapq
+  def nearest_city(numOfCities, cities, xCoordinates, yCoordinates, numOfQueries, queries):
+      dic_x = defaultdict(list)
+      dic_y = defaultdict(list)
+      city_index_memo = dict()
+      for i, city in enumerate(cities):
+          city_index_memo[city] = i
+      for i in range(numOfCities):
+          x, y, city = xCoordinates[i], yCoordinates[i], cities[i]
+          dic_x[x].append((y, city))
+          dic_y[y].append((x, city))
+      res = []
+      for query in queries:
+          index = city_index_memo[query]
+          x, y = xCoordinates[index], yCoordinates[index]
+          x_same_neighbors = dic_x[x]
+          y_same_neighbors = dic_y[y]
+          if len(x_same_neighbors) == 1 and len(y_same_neighbors) == 1:
+              res.append(None)
+              continue
+          diff_x_same_neighbors = [(abs(x_same_neighbor - y), city) for x_same_neighbor, city in x_same_neighbors if x_same_neighbor != y]
+          diff_y_same_neighbors = [(abs(y_same_neighbor - x), city) for y_same_neighbor, city in y_same_neighbors if y_same_neighbor != x]
+          x_diff, y_diff = float('inf'), float('inf')
+          if diff_x_same_neighbors:
+              x_diff, city_x = heapq.heappop(diff_x_same_neighbors)
+          if diff_y_same_neighbors:
+              y_diff, city_y = heapq.heappop(diff_y_same_neighbors)
+          if x_diff < y_diff:
+              res.append(city_x)
+          elif x_diff > y_diff:
+              res.append(city_y)
+          else:
+              res.append(min(city_x, city_y))
+      return res
+  ```
+
+- Given an N-ary tree, find the subtree with the maximum average. Return the root of the subtree.
+  A subtree of a tree is the node which have **at least 1 child** plus all its descendants. The average value of a subtree is the sum of its values, divided by the number of nodes.
+
+  
+
+  **Example 1:**
+
+  
+
+  ```python
+  Input:
+  		 20
+  	   /   \
+  	 12     18
+    /  |  \   / \
+  11   2   3 15  8
+  
+  Output: 18
+  Explanation:
+  There are 3 nodes which have children in this tree:
+  12 => (11 + 2 + 3 + 12) / 4 = 7
+  18 => (18 + 15 + 8) / 3 = 13.67
+  20 => (12 + 11 + 2 + 3 + 18 + 15 + 8 + 20) / 8 = 11.125
+  
+  18 has the maximum average so output 18.
+  ```
+
+  ##### Solution
+
+  ```python
+  # dfs, the return value of helper function or the dfs function is a list including the sum of the subtree and the node count of the subtree
+  class TreeNode:
+      def __init__(self, val):
+          self.val = val
+          self.children = []
+  class Solution:
+      def MaxAverageSubTree(self, root):
+          if not root or not roo.children: return None
+          self.average = float('inf')
+          self.res = None
+          self.helper(root)
+          return self.res
+      def helper(self, node):
+          if not node.children: return [node.val, 1]
+          total, count = node.val, 1
+          for child in node.children:
+              cur_total, cur_count = self.helper(child)
+              total += cur_total
+              count += cur_count
+          if total / count > self.average:
+              self.res = node
+          return [total, count]
+  ```
+
+- \1328. Break a Palindrome
+
+  Medium
+
+  164177Add to ListShare
+
+  Given a palindromic string `palindrome`, replace **exactly one** character by any lowercase English letter so that the string becomes the lexicographically smallest possible string that **isn't** a palindrome.
+
+  After doing so, return the final string. If there is no way to do so, return the empty string.
+
+   
+
+  **Example 1:**
+
+  ```
+  Input: palindrome = "abccba"
+  Output: "aaccba"
+  ```
+
+  **Example 2:**
+
+  ```python
+  Input: palindrome = "a"
+  Output: ""
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def breakPalindrome(self, palindrome: str) -> str:
+          size = len(palindrome)
+          for i in range(size // 2):
+              if palindrome[i] != 'a':
+                  return palindrome[:i] + 'a' + palindrome[i + 1:]
+          return palindrome[:-1] + 'b' if palindrome[:-1] else ''
+  ```
+
+- Amazon is working on a new application for recording internal debts across teams.
+  This program can be used to create groups that show all records of debts between the group members.
+  Given the group debt records observed for this team (including the borrower name, lender name, and debt amount),
+  **who in the group has the smallest negative balance**?
+
+  
+
+  ##### Notes:
+
+  
+
+  -10 is smaller than -1
+  If multiple people have the smallest negative balance, return the list in alphabetical order.
+  If nobody has a negative balance, return the list consisting of string "Nobody has a negative balance".
+
+  
+
+  ***Write an algorithm to find who in the group has the smallest negative balance.***
+
+  
+
+  ##### Input:
+
+  
+
+  The input to the function/method consists of three arguments:
+  numRows, an integer representing the number of debt records.
+  numCols, an integer representing th enumber of elements in debt records. It is always 3.
+  debts, a list of triplet representing debtRecord consisting of a string borrower, a string lender, and an integer
+  amount, representing the debt record.
+
+  
+
+  ##### Output:
+
+  
+
+  Return a list of strings representing an alphabetically ordered list of members with the smallest negative balance.
+  If no team member has a negative balance then return a list containing the string "Nobody has a negative balance".
+
+  
+
+  ##### Constraints:
+
+  
+
+  1 ≤ numRows ≤ 2*10^5
+  1 ≤ amount in debts ≤ 1000
+  1 ≤ length of borrower and lender in debts ≤ 20
+
+  
+
+  **Example:**
+  Input:
+
+  
+
+  | borrower | lender | amount |
+  | :------: | :----: | :----: |
+  |   Alex   | Blake  |   2    |
+  |  Blake   |  Alex  |   2    |
+  |  Casey   |  Alex  |   5    |
+  |  Blake   | Casey  |   7    |
+  |   Alex   | Blake  |   4    |
+  |   Alex   | Casey  |   4    |
+
+  
+
+  Output:
+  ["Alex", "Blake"]
+
+  
+
+  Explanation:
+  The first, fifth, and sixth entries decrease Alex's balance because Alex is a borrower.
+  The second and third entries increase because Alex is a lender. So, Alex's balance is (2+5) - (2+4+4) = 7 - 10 = -3. Blake is lender in first and fifth entries and a borrower in the second and fourth entries. Thus, Blake's balance is (2+4) - (2+7) = 6 - 9 = -3. Casey is a borrower in the third entry and a lender in the fourth and sixth entries. Thus, Casey's balance is (7 + 4) - 5 = 11 - 6 = 5. Here Alex and Blake both have the balance of -3, which is the minimum amoung all members.
+
+        ##### Solution
+
+```python
+import heapq
+from collections import defaultdict
+def min_debt(debt):
+    dic = defaultdict(int)
+    for borrower, lender, amount in debt:
+        dic[borrower] -= amount
+        dic[lender] += amount
+    sorted_debt = sorted(dic.items(), key = lambda x: (x[1], x[0]))
+    res = []
+    heapq.heapify(sorted_debt)
+    name, money = sorted_debt[0]
+    while sorted_debt and sorted_debt[0][1] == money:
+        res.append(heapq.heappop(sorted_debt)[0])
+    return res
+if __name__ == "__main__":
+    '''
+    debt = [['Alex','Blake',2],
+            ['Blake','Alex',2],
+            ['Casey','Alex',5],
+            ['Blake','Casey',7],
+            ['Alex','Blake',4],
+            ['Alex','Casey',4]]
+    '''
+    debt = [['clex', 'Blake', 2],
+            ['Blake', 'clex', 2],
+            ]
+    res = min_debt(debt)
+    print(res)
+```
+
+
+
+- Amazon Basics has several suppliers for its products. For each of the products, the stock is represented by a list of a number of items for each supplier. As items are purchased, the supplier raises the price by 1 per item purchased. Let's assume Amazon's profit on any single item is the same as the number of items the supplier has left. For example, if a supplier has 4 items, Amazon's profit on the first item sold is 4, then 3, then 2 and the profit of the last one is 1.
+
+  
+
+  Given a list where each value in the list is the number of the item at a given supplier and also given the number of items to be ordered, write an algorithm to find the highest profit that can be generated for the given product.
+
+  
+
+  Input
+  The input to the function/method consists on three arguments:
+
+  
+
+  numSuppliers, an integer representing the number of suppliers;
+
+  
+
+  inventory, a list of long integers representing the value of the item at a given supplier;
+
+  
+
+  order, a long integer representing the number of items to be ordered.
+
+  
+
+  Output
+
+  
+
+  Return a long integer representing the highest profit that can be generated for the given product.
+
+  
+
+  Constraints
+
+  
+
+  1 <= numSuppliers <= 10^5
+
+  
+
+  1 <= inventory[i] <= 10 ^ 5
+
+  
+
+  0 <= i < numSuppliers
+
+  
+
+  1 <= orders <= sum of inventory
+
+  
+
+  Example1
+
+  
+
+  Input:
+
+  
+
+  numSuppliers = 2
+
+  
+
+  inventory = [3,5]
+
+  
+
+  order = 6
+
+  
+
+  Output:
+
+  
+
+  19
+
+  ##### Solution
+
+  ```python
+  from collections import defaultdict
+  def highest_profit(numSuppliers, inventory, order):
+      dic = defaultdict(int)
+      for price in inventory:
+          dic[price] += 1
+      cur_max_price = max(dic.keys())
+      res = 0
+      while order > 0:
+          max_price_count = min(order, dic[cur_max_price])
+          res += max_price_count * cur_max_price
+          order -= max_price_count
+          dic[cur_max_price] -= max_price_count
+          dic[cur_max_price - 1] += max_price_count
+          if dic[cur_max_price] == 0:
+              cur_max_price -= 1
+      return res
+  ```
+
+- <img src="C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20201013172258630.png" alt="image-20201013172258630" style="zoom:50%;" />
+
+  
+
+<img src="C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20201013172322664.png" alt="image-20201013172322664" style="zoom:50%;" />
+
+```python
+# my original solution, using backtrack
+from math import sqrt
+def split_prime(string):
+    if not string: return 0
+    memo = dict()
+
+    def is_prime(str):
+        num = int(str)
+        if num > 1:
+            if num == 2: return True
+            if num % 2 == 0: return False
+            for i in range(3, int(sqrt(num)) + 1, 2):
+                if num % i == 0: return False
+            return True
+        return False
+
+    def backtrack(index):
+        if index == len(string): return []
+        if index in memo: return memo[index]
+        res = []
+        for i in range(index, len(string)):
+            if string[index] == '0': continue
+            temp = string[index : i + 1]
+            left = backtrack(i + 1)
+            if not left:
+                if is_prime(temp):
+                    res.append([int(temp)])
+            else:
+                for l in left:
+                    if is_prime(temp):
+                        res.append([int(temp)] + l)
+                    # if is_prime(temp + str(l[0])):
+                    #     res.append([int(temp + str(l[0]))] + l[1:])
+        memo[index] = res
+        return res
+    r = backtrack(0)
+    print(r)
+    return len(r) % 100000007
+
+if __name__ == "__main__":
+    res = split_prime("11373")
+    print(res)
+
+######################there is no need to generate all the substrings################
+from math import sqrt
+def split_prime(string):
+    is_prime_dp = dict()
+    memo = dict()
+    def is_prime(s):
+        num = int(s)
+        if num in is_prime_dp: return is_prime_dp[num]
+        if num > 1:
+            if num == 2: return True
+            if num % 2 == 0: return False
+            ceil = int(sqrt(num)) + 1
+            for i in range(3, ceil, 2):
+                if num % i == 0: return False
+            return True
+        return False
+    def backtrack(index):
+        if index == len(string):
+            return 1
+        if index in memo: return memo[index]
+        res = 0
+        if string[index] == '0': return 0
+        for i in range(index, len(string)):
+            temp = string[index : i + 1]
+            if is_prime(temp):
+                res += backtrack(i + 1)
+        memo[index] = res
+        return res
+    return backtrack(0)
+```
+
+
+
+- A virtual memory management system in an operating system at Amazon can use LeastRecently-Used (LRU) cache. When a requested memory page is not in the cache and the cache is full, the page that was least-recently-used should be removed from the cache to make room for the requested page. If the cache is not full, the requested page can simply be added to the cache and considered the most-recently-used page in the cache. A given page should occur at most once in the cache.
+
+  
+
+  Given the maximum size of the cache and a list of page requests, write an algorithm to calculate the number of cache misses. A cache miss occurs when a page is requested and isn't found in the cache.
+
+  
+
+  **Input**
+
+  
+
+  The input to the function/method consists of three arguments:
+
+  
+
+  num, an integer representing the number of pages;
+
+  
+
+  pages, a list of integers representing the pages requested;
+
+  
+
+  maxCacheSize, an integer representing the size of the cache.
+
+  
+
+  **Output**
+
+  
+
+  Return an integer representing the number of cache misses.
+
+  
+
+  **Note**
+
+  
+
+  The cache is initially empty and the list contains pages numbered in the range 1-50. A page at index "i" in the list is requested before a page at index "i+1".
+
+  
+
+  **Constraints**
+
+  
+
+  0 <= i < num
+
+  
+
+  **Example**
+
+  
+
+  **Input:**
+
+  
+
+  num = 6
+
+  
+
+  pages = [1,2,1,3,1,2]
+
+  
+
+  maxCacheSize = 2
+
+  
+
+  **Output:**
+
+  
+
+  4
+
+  
+
+  **Explanation:**
+
+  
+
+  Cache state as requests come in ordered longest-time-in-cache to shortest-time-in-cache:
+
+  
+
+  1*
+
+  
+
+  1,2*
+
+  
+
+  2,1
+
+  
+
+  1,3*
+
+  
+
+  3,1
+
+  
+
+  1,2*
+
+  ##### Solution
+
+  ```python
+  from collections import OrderedDict
+  def cache_page(num, pages, maxCacheSize):
+      cache = OrderedDict()
+      capacity = 0
+      miss = 0
+      for page in pages:
+          if page in cache:
+              cache.move_to_end(page, last = True)
+          else:
+              miss += 1
+              cache[page] = None
+              capacity += 1
+              if capacity > maxCacheSize:
+                  cache.popitem(last = False)
+                  capacity -= 1
+      return miss
+  if __name__ == "__main__":
+      num = 6
+      pages = [1,2,1,3,1,2]
+      maxCacheSize = 2
+      res = cache_page(num, pages, maxCacheSize)
+      print(res)
+  
+  ```
+
+- ![image-20201013204143761](C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20201013204143761.png)
+
+![image-20201013204208820](C:\Users\gcy\AppData\Roaming\Typora\typora-user-images\image-20201013204208820.png)
+
+```python
+# greedy 
+#sort the offloading time decending and sort the buildingopentime ascending
+def earliest_time(numOfBuildings, buildingOpenTime, offLoadTime):
+    buildingOpenTime.sort()
+    offLoadTime.sort(reverse = True)
+    res = float('-inf')
+    for i in range(numOfBuildings):
+        a, b = buildingOpenTime[i], offLoadTime[i * 4]
+        res = max(res, a + b)
+    return res
+if __name__ == "__main__":
+    a,b,c = 2, [8, 10], [2,2,3,1,8,7,4,5]
+    res = earliest_time(a,b,c)
+    print(res)
+```
+
+
+
+- **Shopping Patterns**
+
+  
+
+  Amazon is trying to understand customer shopping patterns and offer items that are regularly bought together to new customers. Each item that has been bought together can be represented as an undirected graph where edges join often bundled products. A group of *n* products is uniquely numbered from 1 of *product_nodes*. A *trio* is defined as a group of three related products that all connected by an edge. Trios are scored by counting the number of related products outside of the trio, this is referred as a *product sum*.
+
+  
+
+  Given product relation data, determine the minimum product sum for all trios of related products in the group. If no such trio exists, return -1.
+
+  
+
+  **Example**
+  *products_nodes = 6*
+  *products_edges = 6*
+  *products_from = [1,2,2,3,4,5]*
+  *products_to = [2,4,5,5,5,6]*
+
+  
+
+  | Product | Related Products |
+  | :-----: | :--------------: |
+  |    1    |        2         |
+  |    2    |     1, 4, 5      |
+  |    3    |        5         |
+  |    4    |       2, 5       |
+  |    5    |    2, 3, 4, 6    |
+  |    6    |        5         |
+
+  
+
+  ![image](https://assets.leetcode.com/users/images/9d9e18e9-c480-4012-9083-8e20170153d3_1601446461.5111852.png)
+
+  
+
+  *A graph of n = 6 products where the only trip of related products is {2, 4, 5}*
+
+  
+
+  The product scores based on the graph above are :
+
+  
+
+  | Product | Outside Products | Which Products Are Outside |
+  | :-----: | :--------------: | :------------------------: |
+  |    2    |        1         |             1              |
+  |    4    |        0         |                            |
+  |    5    |        2         |            3, 6            |
+
+  
+
+  In the diagram above, the total product score is *1 + 0 + 2 = 3* for the trio *{2, 4, 5}.*
+
+  
+
+```python
+from collections import defaultdict
+def shopping_patterns(product_nodes, products_edges, products_from, products_to):
+    graph = defaultdict(set)
+    for i in range(products_edges):
+        from_node, to_node = products_from[i], products_to[i]
+        graph[from_node].add(to_node)
+        graph[to_node].add(from_node)
+    print(graph)
+    res = float('inf')
+    for i in range(products_edges):
+        a, b = products_from[i], products_to[i]
+        for c in graph[a] & graph[b]:
+            res = min(res, len(graph[a]) - 2 + len(graph[b]) - 2 + len(graph[c]) - 2)
+    return res
+if __name__ == "__main__":
+    a,b,c,d = 6, 6,  [1,2,2,3,4,5], [2,4,5,5,5,6]
+    res = shopping_patterns(a,b,c,d)
+    print(res)
+```
+
+- \236. Lowest Common Ancestor of a Binary Tree
+
+  Medium
+
+  4395184Add to ListShare
+
+  Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
+
+  According to the [definition of LCA on Wikipedia](https://en.wikipedia.org/wiki/Lowest_common_ancestor): “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow **a node to be a descendant of itself**).”
+
+   
+
+  **Example 1:**
+
+  ![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+
+  ```
+  Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+  Output: 3
+  Explanation: The LCA of nodes 5 and 1 is 3.
+  ```
+
+  **Example 2:**
+
+  ![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+
+  ```
+  Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+  Output: 5
+  Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.
+  ```
+
+  **Example 3:**
+
+  ```python
+  Input: root = [1,2], p = 1, q = 2
+  Output: 1
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+          if not root: return None
+          if p == root or q == root: return root
+          left = self.lowestCommonAncestor(root.left, p, q)
+          right = self.lowestCommonAncestor(root.right, p, q)
+          if not left: return right
+          elif not right: return left
+          else: return root
+  ```
+
+- Given a binary tree and its two nodes.
+  Find the **number of turns** needed to reach from one node to other node.
+
+  
+
+  Examples:
+
+  
+
+  Consider the binary tree as shown below :
+
+  
+
+  ```
+                     1
+                  /     \
+                 2        3
+               /   \    /   \
+              4     5   6     7
+  ```
+
+  - 
+
+    Input : Above Binary tree and two nodes [5] & [6]
+    Output: 3
+
+    
+
+  - 
+
+    Input : Above Binary tree and two nodes [1] & [7]
+    Output: 0
+
+  ##### Solution
+
+  ```python
+  # Find the lowest common ancestor first and then from the LCA to find the turns. If the previous node is a left child and current child is a right node, one turn appears. Vice versa. If the current node is one of the current target node, count the turns into final result.
+  from collections import deque
+  def findLowestCommonAncestor(root, p, q):
+      if not root: return None
+      if root == p or root == q: return root
+      left = findLowestCommonAncestor(root.left, p, q)
+      right = findLowestCommonAncestor(root.right, p, q)
+      if not left: return right
+      if not right: return left
+      return root
+  def countTurns(root, p, q):
+      lca = findLowestCommonAncestor(root, p, q)
+      turns = 0
+      queue = deque()
+      queue.append((lca, None, 0))
+      while queue:
+          node, stateFlag, count = queue.popleft()
+          if node.left:
+              queue.append((node.left, 'l', count + 1 if stateFlag == 'r' else count))
+          if node.left == p or node.left == q:
+              turns += queue[-1][2]
+          if node.right:
+              queue.append((node.right, 'r', count + 1 if stateFlag == 'l' else count))
+          if node.right == p or node.left == q:
+              turns += queue[-1][2]
+      if lca in {p, q}: return turns
+      else: return turns + 1
+  ```
+
+- \937. Reorder Data in Log Files
+
+  Easy
+
+  7922371Add to ListShare
+
+  You have an array of `logs`. Each log is a space delimited string of words.
+
+  For each log, the first word in each log is an alphanumeric *identifier*. Then, either:
+
+  - Each word after the identifier will consist only of lowercase letters, or;
+  - Each word after the identifier will consist only of digits.
+
+  We will call these two varieties of logs *letter-logs* and *digit-logs*. It is guaranteed that each log has at least one word after its identifier.
+
+  Reorder the logs so that all of the letter-logs come before any digit-log. The letter-logs are ordered lexicographically ignoring identifier, with the identifier used in case of ties. The digit-logs should be put in their original order.
+
+  Return the final order of the logs.
+
+   
+
+  **Example 1:**
+
+  ```python
+  Input: logs = ["dig1 8 1 5 1","let1 art can","dig2 3 6","let2 own kit dig","let3 art zero"]
+  Output: ["let1 art can","let3 art zero","let2 own kit dig","dig1 8 1 5 1","dig2 3 6"]
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def reorderLogFiles(self, logs: List[str]) -> List[str]:
+          alpha, digit = [], []
+          for i, log in enumerate(logs):
+              log = log.split(' ')
+              if log[1].isnumeric():
+                  digit.append(log)
+              else:
+                  alpha.append(log)
+          alpha.sort(key = lambda x: (x[1:], x[0]))
+          res_temp = alpha + digit
+          return [' '.join(i) for i in res_temp]
+  ```
+
+- Given 2 lists `a` and `b`. Each element is a pair of integers where the first integer represents the unique id and the second integer represents a value. Your task is to find an element from `a` and an element form `b` such that the sum of their values is less or equal to `target` and as close to `target` as possible. Return a list of ids of selected elements. If no pair is possible, return an empty list.
+
+  
+
+  **Example 1:**
+
+  
+
+  ```
+  Input:
+  a = [[1, 2], [2, 4], [3, 6]]
+  b = [[1, 2]]
+  target = 7
+  
+  Output: [[2, 1]]
+  
+  Explanation:
+  There are only three combinations [1, 1], [2, 1], and [3, 1], which have a total sum of 4, 6 and 8, respectively.
+  Since 6 is the largest sum that does not exceed 7, [2, 1] is the optimal pair.
+  ```
+
+  
+
+  **Example 2:**
+
+  
+
+  ```
+  Input:
+  a = [[1, 3], [2, 5], [3, 7], [4, 10]]
+  b = [[1, 2], [2, 3], [3, 4], [4, 5]]
+  target = 10
+  
+  Output: [[2, 4], [3, 2]]
+  
+  Explanation:
+  There are two pairs possible. Element with id = 2 from the list `a` has a value 5, and element with id = 4 from the list `b` also has a value 5.
+  Combined, they add up to 10. Similarily, element with id = 3 from `a` has a value 7, and element with id = 2 from `b` has a value 3.
+  These also add up to 10. Therefore, the optimal pairs are [2, 4] and [3, 2].
+  ```
+
+  
+
+  **Example 3:**
+
+  
+
+  ```
+  Input:
+  a = [[1, 8], [2, 7], [3, 14]]
+  b = [[1, 5], [2, 10], [3, 14]]
+  target = 20
+  
+  Output: [[3, 1]]
+  ```
+
+  
+
+  **Example 4:**
+
+  
+
+  ```python
+  Input:
+  a = [[1, 8], [2, 15], [3, 9]]
+  b = [[1, 8], [2, 11], [3, 12]]
+  target = 20
+  
+  Output: [[1, 3], [3, 2]]
+  ```
+
+  ##### Solution
+
+  ```python
+  def optimizeUtilization(a, b, target):
+      a.sort(key = lambda x : x[1])
+      b.sort(key = lambda x : x[1])
+      size_a, size_b = len(a), len(b)
+      res = []
+      diff = float('inf')
+      i, j = 0, size_b - 1
+      while i < size_a and j >= 0:
+          value_a, value_b = a[i][1], b[j][1]
+          cur_sum = value_a + value_b
+          cur_diff = - cur_sum + target
+          if 0 <= cur_diff < diff:
+              diff = cur_diff
+              res.clear()
+              res.append([a[i][0], b[j][0]])
+          elif cur_diff == diff:
+              res.append([a[i][0], b[j][0]])
+          if cur_diff <= 0:
+              j -= 1
+          else: i += 1
+      return res
+  if __name__ == "__main__":
+      a = [[1, 8], [2, 15], [3, 9]]
+      b = [[1, 8], [2, 11], [3, 12]]
+      target = 20
+      res = optimizeUtilization(a,b,target)
+      print(res)
+  
+  
+  ```
+
+- Given:
+
+  
+
+  ```python
+    5
+   /  \ 
+  3   7
+    9
+   / \
+  5   12
+    \
+     7
+  Returns:
+  7
+  ```
+
+  ##### Solution
+
+  ```python
+  def put_into_stack(stack, root):
+      while root:
+          stack.append(root)
+          root = root.right
+  def largest_common_number(root_1, root_2):
+      stack_1, stack_2 = [], []
+      put_into_stack(stack_1, root_1)
+      put_into_stack(stack_2, root_2)
+      while stack_1 and stack_2:
+          val_1, val_2 = stack_1[-1].val, stack_2[-1].val
+          if val_1 == val_2: return val_1
+          if val_1 < val_2: 
+              node = stack_2.pop()
+              put_into_stack(stack_2, node.left)
+          else:
+              node = stack_1.pop()
+              put_into_stack(stack_1, node.left)
+      return -1
+  ```
+
+- Given a map `Map> userSongs` with user names as keys and a list of all the songs that the user has listened to as values.
+
+  
+
+  Also given a map `Map> songGenres`, with song genre as keys and a list of all the songs within that genre as values. The song can only belong to only one genre.
+
+  
+
+  The task is to return a map `Map>`, where the key is a user name and the value is a list of the user's favorite genre(s). Favorite genre is the most listened to genre. A user can have more than one favorite genre if he/she has listened to the same number of songs per each of the genres.
+
+  
+
+  **Example 1:**
+
+  
+
+  ```
+  Input:
+  userSongs = {  
+     "David": ["song1", "song2", "song3", "song4", "song8"],
+     "Emma":  ["song5", "song6", "song7"]
+  },
+  songGenres = {  
+     "Rock":    ["song1", "song3"],
+     "Dubstep": ["song7"],
+     "Techno":  ["song2", "song4"],
+     "Pop":     ["song5", "song6"],
+     "Jazz":    ["song8", "song9"]
+  }
+  
+  Output: {  
+     "David": ["Rock", "Techno"],
+     "Emma":  ["Pop"]
+  }
+  
+  Explanation:
+  David has 2 Rock, 2 Techno and 1 Jazz song. So he has 2 favorite genres.
+  Emma has 2 Pop and 1 Dubstep song. Pop is Emma's favorite genre.
+  ```
+
+  
+
+  **Example 2:**
+
+  
+
+  ```python
+  Input:
+  userSongs = {  
+     "David": ["song1", "song2"],
+     "Emma":  ["song3", "song4"]
+  },
+  songGenres = {}
+  
+  Output: {  
+     "David": [],
+     "Emma":  []
+  }
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import defaultdict
+  def favorite_song(user_songs, song_generes):
+      print(user_songs)
+      song_gener_dic = dict()
+      for gener, song_list in song_generes.items():
+          for song in song_list:
+              song_gener_dic[song] = gener
+      res = defaultdict(list)
+      print(song_gener_dic)
+  
+      for user, songs in user_songs.items():
+          max_frequency = 0
+          gen_frequency_dic = defaultdict(int)
+          for song in songs:
+              if song in song_gener_dic:
+                  gen = song_gener_dic[song]
+                  gen_frequency_dic[gen] += 1
+                  if gen_frequency_dic[gen] > max_frequency:
+                      res[user].clear()
+                      res[user].append(gen)
+                      max_frequency = gen_frequency_dic[gen]
+                  elif gen_frequency_dic[gen] == max_frequency:
+                      res[user].append(gen)
+      return res
+  if __name__ == "__main__":
+      userSongs = dict()
+      userSongs["David"] = ["song1", "song2"]
+      userSongs["Emma"] = ["song5", "song6"]
+      songGenres = {
+      }
+      r = favorite_song(userSongs, songGenres)
+      print(r)
+  
+  ```
+
 - 
-
-
-
