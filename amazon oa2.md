@@ -2779,9 +2779,449 @@ if __name__ == "__main__":
       r = find(numOrders, requirements, flaskTypes, totalMarks, markings)
       print(r)
   
+  ```
   
+- Amazon's website contains one to many items in each page. To mimic the logic of the website, an Amazon programmer has a list of items and each item has its name, relevance and price. After sorting the items by (name: 0, relevance: 1, price: 2), the programmer is trying to find out a list of items displayed in a chosen page.
+
   
+
+  Given a list of items, the sort column, the sort order (0: ascending, 1: descending), the number of items to be displayed in each page and a page number, write an algorithm to determine the list of item names in the specified page while respecting the item's order (Page number starts at 0).
+
   
+
+  Input
+
+  
+
+  The input to the function/method consists of six arguments:
+
+  
+
+  numOfltems, an integer representing the number of items;
+
+  
+
+  items, a map of string as key representing the name and pair of integers as values representing the relevance, price.
+
+  
+
+  sortParameter, an integer representing the value used for sorting (0 for name, 1 for relevance, 2 for price)
+
+  
+
+  sortOrder, an integer representing the order of sorting (0 for ascending order and 1 descending order);
+
+  
+
+  itemsPerPage, an integer representing the number of items per page;
+
+  
+
+  pageNumber, an integer representing the page number.
+
+  
+
+  Output
+
+  
+
+  Return a list of strings representing the item names on the requested page in the order they are displayed.
+
+  
+
+  Constraints
+
+  
+
+  1 <= numOfitems < 10^5
+
+  
+
+  0 <= relevance, price < 10^8
+
+  
+
+  0 <= pageNumber < 10
+
+  
+
+  Note
+
+  
+
+  itemsPerPage is always greater than 0, and is always less than the minimum of numOfltems and 20.
+
+  
+
+  Example
+
+  
+
+  Input:
+
+  
+
+  numOfltems = 3
+
+  
+
+  items = [["item1", 10,15], ["item2",3,4]. ["item3", 17, 8]]
+
+  
+
+  sortParameter=1
+
+  
+
+  sortOrder = 0
+
+  
+
+  itemsPerPage=2
+
+  
+
+  pageNumber=1
+
+  
+
+  Output:
+
+  
+
+  ["item3"]
+
+  
+
+  Explanation:
+
+  
+
+  There are 3 items.
+
+  
+
+  Sort them by relevance(sortParameter = 1) in ascending order ( items = [["item2", 3, 4], ["item1", 10,15], ["item3", 17, 8]]).
+
+  
+
+  Display up to 2 items on each page.
+
+  
+
+  The page 0 contains 2 item names ["item2", "item1"] and page 1 contains only 1 item name ["item3"].
+
+  
+
+  So, the output is "item3".
+
+  ##### Solution
+
+  ```python
+  def items_to_display(numOfItems, items, sortParameter, sortOrder, itemsPerPage, pageNumber):
+      items.sort(key = lambda x: x[sortParameter], reverse = sortOrder)
+      start_index = itemsPerPage * pageNumber
+      end_index = min(numOfItems, start_index + pageNumber)
+      return [i[0] for i in items[start_index : end_index]]
+  ```
+
+- \21. Merge Two Sorted Lists
+
+  Easy
+
+  5128644Add to ListShare
+
+  Merge two sorted linked lists and return it as a new **sorted** list. The new list should be made by splicing together the nodes of the first two lists.
+
+   
+
+  **Example 1:**
+
+  ![img](https://assets.leetcode.com/uploads/2020/10/03/merge_ex1.jpg)
+
+  ```
+  Input: l1 = [1,2,4], l2 = [1,3,4]
+  Output: [1,1,2,3,4,4]
+  ```
+
+  **Example 2:**
+
+  ```
+  Input: l1 = [], l2 = []
+  Output: []
+  ```
+
+  **Example 3:**
+
+  ```
+  Input: l1 = [], l2 = [0]
+  Output: [0]
+  ```
+
+   
+
+  **Constraints:**
+
+  - The number of nodes in both lists is in the range `[0, 50]`.
+  - `-100 <= Node.val <= 100`
+  - Both `l1` and `l2` are sorted in **non-decreasing** order.
+
+  ##### Solution
+
+  ```python
+  # Definition for singly-linked list.
+  # class ListNode:
+  #     def __init__(self, val=0, next=None):
+  #         self.val = val
+  #         self.next = next
+  class Solution:
+      def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+          if not l1: return l2
+          if not l2: return l1
+          if l1.val < l2.val:
+              l1.next = self.mergeTwoLists(l1.next, l2)
+              return l1
+          else:
+              l2.next = self.mergeTwoLists(l1, l2.next)
+              return l2
+  ```
+
+- GetMaxValue; 給一個array 求最大的值為多少
+  限制1 : sort後的起始必須為1
+  限制2: sort後任相鄰兩個數字間的差不超過1
+
+  Example: input [1,3,2,2] output 3.
+  Explaination : sort 後為 [1,2,2,3] , 最大為3 且任相鄰兩個數字間的差不超過1
+
+  Example input [2,4,7,3] output 4
+  Explaination : sort 後為 [2,3,4,7] 我們可以先調整為 [1,2,3,4] 最大為4 且任相鄰兩個數字間的差不超過1
+
+  ```python
+  def find(arr):
+      arr.sort()
+      if arr[0] != 1:
+          diff = arr[0] - 1
+          for i, num in enumerate(arr):
+              arr[i] = num - diff
+      previous_val = 1
+      for i in range(1, len(arr)):
+          cur_val = arr[i]
+          if cur_val - previous_val <= 1:
+              previous_val = cur_val
+          else:
+              previous_val += 1
+      return previous_val
+  ```
+
+- slowest key
+
+  ##### Solution
+
+  ```python
+  def slowest_key(key_times):
+      dic = dict()
+      for i in range(26):
+          dic[i] = chr(ord('a') + i)
+      print(dic)
+      previous_time = 0
+      longest_time = float('-inf')
+      res = ''
+      for key, time in key_times:
+          alpha = dic[key]
+          duration = time - previous_time
+          previous_time = time
+          if duration > longest_time:
+              longest_time = duration
+              res = alpha
+      return res
+  ```
+
+- Maximal Square(221)
+
+  ```
+  class Solution:
+      def maximalSquare(self, matrix: List[List[str]]) -> int:
+              if not matrix: return 0
+              m, n = len(matrix), len(matrix[0])
+              dp = [[0] * (n + 1) for _ in range(m + 1)]
+              longest = float('-inf')
+              for i in range(1, m + 1):
+                  for j in range(1, n + 1):
+                      if matrix[i - 1][j - 1] == '1':
+                          dp[i][j] = min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1
+                          longest = max(longest, dp[i][j])
+              return longest ** 2 if longest > float('-inf') else 0
   ```
 
   
+
+- unique divice name https://www.1point3acres.com/bbs/thread-677839-1-1.html
+
+  ```python
+  from collections import defaultdict
+  def unique_device_name(num, device_names):
+      dic = defaultdict(int)
+      res = []
+      for name in device_names:
+          dic[name] += 1
+          if dic[name] == 1: res.append(name)
+          else: res.append(name + str(dic[name] - 1))
+      return res
+  ```
+
+  
+
+- \973. K Closest Points to Origin
+
+  Medium
+
+  2245121Add to ListShare
+
+  We have a list of `points` on the plane. Find the `K` closest points to the origin `(0, 0)`.
+
+  (Here, the distance between two points on a plane is the Euclidean distance.)
+
+  You may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in.)
+
+   
+
+  **Example 1:**
+
+  ```
+  Input: points = [[1,3],[-2,2]], K = 1
+  Output: [[-2,2]]
+  Explanation: 
+  The distance between (1, 3) and the origin is sqrt(10).
+  The distance between (-2, 2) and the origin is sqrt(8).
+  Since sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.
+  We only want the closest K = 1 points from the origin, so the answer is just [[-2,2]].
+  ```
+
+  **Example 2:**
+
+  ```python
+  Input: points = [[3,3],[5,-1],[-2,4]], K = 2
+  Output: [[3,3],[-2,4]]
+  (The answer [[-2,4],[3,3]] would also be accepted.)
+  ```
+
+  ##### Solution
+
+  ```python
+  import heapq
+  def k_closest(points, k):
+      heap = []
+      for x, y in points:
+          distance = - (x ** 2 + y ** 2)
+          if len(heap) < k:
+              heapq.heappush(heap, (distance, [x, y]))
+          else:
+              heapq.heappushpop(heap, (distance, [x, y]))
+      return [r[1] for r in heap]
+  if __name__ == "__main__":
+      points = [[1,3], [-2, 2]]
+      res = k_closest(points, 1)
+      print(res)
+  ```
+
+- Given a list of unique integers `nums`, construct a BST from it (you need to insert nodes one-by-one with the given order to get the BST) and find the distance between two nodes `node1` and `node2`. Distance is the number of edges between two nodes. If any of the given nodes does not appear in the BST, return `-1`.
+
+  
+
+  **Example 1:**
+
+  
+
+  ```python
+  Input: nums = [2, 1, 3], node1 = 1, node2 = 3
+  Output: 2
+  Explanation:
+       2
+     /   \
+    1     3
+  ```
+
+  ##### Solution
+
+  ```python
+  class TreeNode:
+      def __init__(self, val):
+          self.val = val
+          self.left = None
+          self.right = None
+  def find_distance(arr, i, j):
+      root = None
+      for k in range(len(arr)):
+          root = build_bst(root, arr[k])
+      lca = find_lowest_common_ancestor(root, i, j)
+      distance_1 = compute_distance(lca, i)
+      distance_2 = compute_distance(lca, j)
+      if distance_1 == float('inf') or distance_2 == float('inf'):
+          return -1
+      return distance_1 + distance_2
+  
+  def compute_distance(lca, num):
+      distance = 0
+      find = False
+      root = lca
+      while root:
+          if root.val == num:
+              find = True
+              break
+          elif root.val < num:
+              distance += 1
+              root = root.right
+          elif root.val > num:
+              distance += 1
+              root = root.left
+      return distance if find else float('inf')
+  
+  
+  def find_lowest_common_ancestor(root, i, j):
+      while True:
+          if i < root.val and j < root.val:
+              root = root.left
+          elif i > root.val and j > root.val:
+              root = root.right
+          else:
+              return root
+  
+  def build_bst(root, num):
+      if not root:
+          node = TreeNode(num)
+          return node
+      elif num < root.val:
+          if not root.left:
+              root.left = TreeNode(num)
+          else:
+              build_bst(root.left, num)
+      elif num > root.val:
+          if not root.right:
+              root.right = TreeNode(num)
+          else:
+              build_bst(root.right, num)
+      return root
+  ```
+
+- testid 23280674240314
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
