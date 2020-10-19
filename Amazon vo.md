@@ -803,5 +803,485 @@
           return res
   ```
 
-- 
+- ##### Description
+
+  ```
+  label system: https://leetcode.com/discuss/interview-question/893442/
+  ```
+
+  ##### Solution
+
+  ```python
+  '''
+  Greedy solution: try to add the largest character, if the number of the  consecutive  current  largest character is larger than the character limit, we should find the next largest character and use it to separate the long consecutive character. For example, if the character counter of the original label string is "bbbbba" and the character limit is 2, after adding the first two alpha b to the result, the next added character shold not be b anymore, we should find the next largest character which is a to separate the consecutive character b, so the result should be "bbabb".
+  '''
+  from collections import Counter
+  import heapq
+  def label_system(original_label, char_limit):
+      # the order of character 'a' is 97, 'z' is 122
+      # recording the frequency of different characters
+      char_counter = [0] * 26
+      for ch in original_label:
+          char_counter[ord(ch) - ord('a')] += 1
+      #print(char_counter)
+      res = []
+      for i in range(25, -1, -1):
+          count = 0
+          while char_counter[i] > 0:
+              res.append(chr(ord('a') + i))
+              char_counter[i] -= 1
+              count += 1
+              if char_counter[i] > 0 and count == char_limit:
+                  next_char = find_next_char(char_counter, i)
+                  if not next_char: return ''.join(res)
+                  res.append(next_char)
+                  char_counter[ord(next_char) - ord('a')] -= 1
+                  count = 0
+      return ''.join(res)
+  
+  def find_next_char(char_counter, start_index):
+      next_char_index = -1
+      for i in range(start_index - 1, -1, -1):
+          if char_counter[i] > 0:
+              next_char_index = i
+              break
+      res = None
+      if next_char_index >= 0:
+          res = chr(ord('a') + i)
+      return res
+  
+  
+  if __name__ == "__main__":
+      original_label = 'fjasdfjoairehqofdnvmzvnzlalurqo'
+      r = label_system(original_label, 2)
+      print(r)
+  ```
+
+- ##### Description
+
+  ```python
+  221. Maximal Square
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def maximalSquare(self, matrix: List[List[str]]) -> int:
+              if not matrix: return 0
+              m, n = len(matrix), len(matrix[0])
+              dp = [[0] * (n + 1) for _ in range(m + 1)]
+              longest = float('-inf')
+              for i in range(1, m + 1):
+                  for j in range(1, n + 1):
+                      if matrix[i - 1][j - 1] == '1':
+                          dp[i][j] = min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1
+                          longest = max(longest, dp[i][j])
+              return longest ** 2 if longest > float('-inf') else 0
+  ```
+
+- ##### Description
+
+  ```
+  85. Maximal Rectangle
+  ```
+
+  ##### Solution
+
+  ```python
+  def max_rectangle(matrix):
+      if not matrix: return 0
+      n = len(matrix[0])
+      heights = [0] * (n + 1)
+      res = 0
+      for row in matrix:
+          for i in range(n):
+              heights[i] = heights[i] + 1 if row[i] == 1 else 0
+          stack = [-1]
+          for j in range(n + 1):
+              while stack and heights[j] < heights[stack[-1]]:
+                  h = heights[stack.pop()]
+                  w = j - stack[-1] - 1
+                  area = h * w
+                  res = max(res, area)
+              stack.append(j)
+      return res
+  
+  if __name__ == "__main__":
+      matrix = [[1, 0, 1, 0, 0], [1,0,1,1,1],[1,1,1,1,1],[1,0,0,1,0]]
+      res = max_rectangle(matrix)
+      print(res)
+  ```
+
+- ##### Description
+
+  ```
+  198. House Robber
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def rob(self, nums: List[int]) -> int:
+          stole, not_stole = 0, 0
+          for num in nums:
+              temp = not_stole
+              not_stole = max(stole, not_stole)
+              stole = num + temp
+          return max(stole, not_stole)
+  ```
+
+- ##### Description
+
+  ```
+  20. Valid Parentheses
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def isValid(self, s: str) -> bool:
+          stack = []
+          right_parentheses = {')', ']', '}'}
+          match_dic = {')':'(', ']':'[', '}':'{'}
+          for ch in s:
+              if stack and ch in right_parentheses and stack[-1] == match_dic[ch]:
+                  stack.pop()
+                  continue
+              stack.append(ch)
+          return not stack
+  ```
+
+  ##### Follow up
+
+  ```
+  '*' can represent any kind of parentheses, how to solve it?
+  similar to 678. Valid Parenthesis String
+  ```
+
+  ##### Solution
+
+  ```python
+  ######################### my initial tle version ##############################
+  class Solution:
+      def checkValidString(self, s: str) -> bool:
+          stack = []
+          index = 0
+          return self.helper(index, stack, s)
+  
+      def helper(self, index, stack, s):
+          if index == len(s):
+              return not stack
+          if s[index] == '(':
+              if self.helper(index + 1, stack + ['('], s):
+                  return True
+          if s[index] == ')':
+              if stack and stack[-1] == '(':
+                  stack.pop()
+                  if self.helper(index + 1, stack, s):
+                      return True
+                  stack.append('(')
+          if s[index] == '*':
+              # '*' represents the '('
+              if self.helper(index + 1, stack + ['('], s): return True
+              # '*' represents the empty space
+              if self.helper(index + 1, stack, s): return True
+              # '*' represents the ')'
+              if stack and stack[-1] == '(':
+                  stack.pop()
+                  if self.helper(index + 1, stack, s): return True
+                  stack.append('(')
+          return False
+  ################################ improved version #############################
+  # only ()
+  class Solution:
+      def checkValidString(self, s: str) -> bool:
+          cmin, cmax = 0, 0
+          for i in s:
+              if i == '(':
+                  cmin += 1
+                  cmax += 1
+              if i == ')':
+                  cmax -= 1
+                  cmin = max(0, cmin - 1)
+              if i == '*':
+                  cmax += 1
+                  cmin = max(0, cmin - 1)
+              if cmax < 0: return False
+          return cmin == 0
+  ########################### ()[]}{} all included ###########################
+  left = {'(', '[', '{'}
+  right = {')', ']', '}'}
+  match = {')':'(', "]":'[', '}':'{'}
+  def valid_parenthesis(string):
+      stack = []
+      return helper(string, 0, stack)
+  
+  def helper(string, index, stack):
+      if index == len(string):
+          while stack and stack[-1] == '*':
+              if len(stack) == 1: return True
+              stack.pop()
+              stack.pop()
+          return not stack
+      if string[index] in left:
+          if helper(string, index + 1, stack + [string[index]]):
+              return True
+      if string[index] in right:
+          if helper(string, index + 1, stack[:-1]):
+              return True
+      if string[index] == '*':
+          if helper(string, index + 1, stack[:-1]):
+              return True
+          if helper(string, index + 1, stack + ['*']):
+              return True
+          if helper(string, index + 1, stack):
+              return True
+      return False
+  if __name__ == "__main__":
+      s = "***())]"
+      res = valid_parenthesis(s)
+      print(res)
+  ```
+
+- ##### Description
+
+  ```
+  127. Word Ladder
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import deque
+  class Solution:
+      def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+          wordList = set(wordList)
+          #wordList.add(endWord)
+          queue = deque([[beginWord, 1]])
+          while queue:
+              word, length = queue.popleft()
+              if word == endWord:
+                  return length
+              for i in range(len(word)):
+                  for s in "abcdefghijklmnopqrstuvwxyz":
+                      temp = word[:i] + s + word[i + 1 :]
+                      if temp in wordList:
+                          wordList.remove(temp)
+                          queue.append([temp, length + 1])
+          return 0
+  ```
+
+- ##### Description
+
+  ```python
+  87. Scramble String
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def isScramble(self, s1: str, s2: str) -> bool:
+          m, n = len(s1), len(s2)
+          if m != n or sorted(s1) != sorted(s2): return False
+          if m < 4 or s1 == s2: return True
+          f = self.isScramble
+          for i in range(1, m):
+              if f(s1[:i], s2[:i]) and f(s1[i:], s2[i:]) or \
+                      f(s1[:i], s2[-i :]) and f(s1[i:], s2[:-i]):
+                  return True
+          return False
+  ```
+
+- ##### Description
+
+  ```
+  994. Rotting Oranges
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import deque
+  class Solution:
+      def orangesRotting(self, grid: List[List[int]]) -> int:
+          if not grid: return 0
+          m, n = len(grid), len(grid[0])
+          queue = deque()
+          for i in range(m):
+              for j in range(n):
+                  if grid[i][j] == 2:
+                      queue.append((i, j, 0))
+          res = float('-inf')
+          while queue:
+              x, y, time = queue.popleft()
+              res = max(res, time)
+              for delta_x, delta_y in [(-1, 0), (1, 0), (0, 1), (0, -1)]:
+                  new_x, new_y = x + delta_x, y + delta_y
+                  if 0 <= new_x < m and 0 <= new_y < n and grid[new_x][new_y] == 1:
+                      grid[new_x][new_y] = 2
+                      queue.append((new_x, new_y, time + 1))
+          for i in range(m):
+              for j in range(n):
+                  if grid[i][j] == 1:
+                      return -1
+          return res if res > float('-inf') else 0
+  ```
+
+- ##### Description
+
+  ```python
+  692. Top K Frequent Words
+  ```
+
+  ##### Solution
+
+  ```python
+  # using python built in function, O(nlogn) time complexity
+  from collections import Counter
+  class Solution:
+      def topKFrequent(self, words: List[str], k: int) -> List[str]:
+          counter = Counter(words)
+          counter = sorted(counter.items(), key = lambda x: (-x[1], x[0]))
+          res = []
+          return [item[0] for item in counter[:k]]
+  
+  # another version without the built in function, O(nlogk) time complexity
+  '''
+  implement a node class which has two properties word and count. Besides, we should also implement the __lt__(self, other)(I think lt means less than) and __eq__(self, other) function. We should stipulate the sorting order the self is less than the other. The heap could help us find the n largest elements.
+  '''
+  from collections import Counter
+  import heapq
+  import functools
+  
+  class Node:
+      def __init__(self, word, count):
+          self.word = word
+          self.count = count
+      def __lt__(self, other):
+          if self.count == other.count:
+              return self.word > other.word
+          return self.count < other.count
+      def __eq__(self, other):
+          return self.count == other.count and self.word == other.word
+  
+  class Solution:
+      def topKFrequent(self, words: List[str], k: int) -> List[str]:
+          counter = Counter(words)
+          res = []
+          heapq.heapify(res)
+          for key, val in counter.items():
+              heapq.heappush(res, Node(key, val))
+              if len(res) > k:
+                  heapq.heappop(res)
+          r = []
+          for _ in range(k):
+              r.append(heapq.heappop(res).word)
+          return r[::-1]
+  
+  ```
+
+- ##### Description
+
+  ```
+  139. Word Break
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+          if not s: return True
+          if not wordDict: return False
+          wordDict = set(wordDict)
+          memo = dict()
+          return self.helper(s, wordDict, 0, memo)
+      def helper(self, s, wordDict, start, memo):
+          if start == len(s): return True
+          if start in memo: return memo[start]
+          for end in range(start, len(s)):
+              temp = s[start : end + 1]
+              if temp in wordDict:
+                  if self.helper(s, wordDict, end + 1, memo):
+                      memo[start] = True
+                      return True
+          memo[start] = False
+          return False
+  ```
+
+- ##### Description
+
+  ```python
+  Coding: 给一个2darray类似于[[0,1], [1,1], ..]代表locker的位置，然后再给定两个值代表一个2d matrix的大小Rows，Cols
+  需要返回一个2d的matrix来计算每一个点对于给定locker的最小距离
+  例子：[[1,1]], 3,3
+  0 0 0     2 1 2
+  0 0 0 -> 1 0 1
+  0 0 0     2 1 2
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import deque
+  def min_distance(row, col, lockers):
+      matrix = [[0] * col for _ in range(row)]
+      queue = deque()
+      visited = set()
+      for locker in lockers:
+          queue.append(locker + [0])
+          visited.add(tuple(locker))
+      m, n = len(matrix), len(matrix[0])
+      while queue:
+          x, y, step = queue.popleft()
+          matrix[x][y] = step
+          for delta_x, delta_y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+              new_x, new_y = x + delta_x, y + delta_y
+              if 0 <= new_x < m and 0 <= new_y < n and (new_x, new_y) not in visited:
+                  visited.add((new_x, new_y))
+                  queue.append([new_x, new_y, step + 1])
+      return matrix
+  if __name__ == "__main__":
+      res = min_distance(3,3,[[1,1]])
+      print(res)
+  
+  ```
+
+- ##### Description
+
+  ```
+  1143. Longest Common Subsequence
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+          size_1, size_2 = len(text1), len(text2)
+          dp = [[0] * (size_2 + 1) for _ in range(size_1 + 1)]
+          for i in range(1, size_1 + 1):
+              for j in range(1, size_2 + 1):
+                  if text1[i - 1] == text2[j - 1]:
+                      dp[i][j] = dp[i - 1][j - 1] + 1
+                  else:
+                      dp[i][j] = max(dp[i][j - 1], dp[i - 1][j])
+          return dp[-1][-1]
+  ```
+
+- ##### Description
+
+  ```
+  
+  ```
+
+  
+
+
+
+
 
