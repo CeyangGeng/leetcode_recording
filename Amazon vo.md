@@ -1275,13 +1275,528 @@
 
 - ##### Description
 
+  ```python
+  451. Sort Characters By Frequency
   ```
+
+  ##### Solution
+
+  ```python
+  from collections import Counter
+  class Solution:
+      def frequencySort(self, s: str) -> str:
+          counter = Counter(s)
+          temp = sorted(counter.items(), key = lambda x: (x[1]), reverse = True)
+          res = ''
+          for character, frequency in temp:
+              res += character * frequency
+          return res
+  ```
+
+- ##### Description
+
+  ```
+  238. Product of Array Except Self
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def productExceptSelf(self, nums: List[int]) -> List[int]:
+          res = [1]
+          product = 1
+          size = len(nums)
+          for i in range(size - 1):
+              product *= nums[i]
+              res.append(product)
+          product = 1
+          for i in range(size - 2, -1, -1):
+              product *= nums[i + 1]
+              res[i] *= product
+          return res
+  ```
+
+- ##### Description
+
+  ```python
+  207. Course Schedule
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import defaultdict
+  class Solution:
+      def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+          graph = defaultdict(list)
+          degree = defaultdict(int)
+          for second, first in prerequisites:
+              degree[second] += 1
+              graph[first].append(second)
+          queue = deque()
+          for i in range(numCourses):
+              if degree[i] == 0: queue.append(i)
+          count = 0
+          while queue:
+              node = queue.popleft()
+              count += 1
+              for neighbor in graph[node]:
+                  degree[neighbor] -= 1
+                  if degree[neighbor] == 0:
+                      queue.append(neighbor)
+          return count == numCourses
+  ```
+
+- ##### Description
+
+  ```python
+  285. Inorder Successor in BST
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def inorderSuccessor(self, root: 'TreeNode', p: 'TreeNode') -> 'TreeNode':
+          if not root: return None
+          node = root.left
+          while node and node.right:
+              node = node.right
+          if p == node: return root
+          if p == root:
+              node = root.right
+              while node and node.left:
+                  node = node.left
+              return node          
+          if p.val < root.val: return self.inorderSuccessor(root.left, p)
+          if p.val > root.val: return self.inorderSuccessor(root.right, p)
+   ########################### a more clean version ##########################
+  class Solution:
+      def inorderSuccessor(self, root: 'TreeNode', p: 'TreeNode') -> 'TreeNode':
+          if not root: return None
+          if root.val > p.val: return self.inorderSuccessor(root.left, p) or root
+          else: return self.inorderSuccessor(root.right, p)
+  ```
+
+- ##### Description
+
+  ```
+  510. Inorder Successor in BST II
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def inorderSuccessor(self, node: 'Node') -> 'Node':
+          if not node: return None
+          # firstly see the node as the root
+          if node.right:
+              temp = node.right
+              while temp and temp.left:
+                  temp = temp.left
+              return temp
+          # secondly see the node as the right most node of the left subtree
+          else:
+              while node.parent and node.parent.right == node:
+                  node = node.parent
+              if node.parent and node.parent.left == node:
+                  return node.parent
+              return None
+  ```
+
+- ##### Description
+
+  ```
+  449. Serialize and Deserialize BST
+  ```
+
+  ##### Solution
+
+  ```python
+  '''
+  While serializing the BST, we should use a res list to record the encoded string and a queue to record the nodes.
+  If the node is not None, we should add both the node.left and node.right to the queue regardless of whether the node.left or the node.right is empty. If the node is None, we do not need to add the empty node into the queue. If the popped node is None, we should add '#' to mark this empty node. 
+  while deserializing the BST, we should keep a queue to record the node at the same level and install the node.left and node.right one by one from the data list and add the non-empty children node to the next level queue.
+  '''
+  from collections import deque
+  class Codec:
+  
+      def serialize(self, root: TreeNode) -> str:
+          """Encodes a tree to a single string.
+          """
+          queue = deque()
+          res = []
+          queue.append(root)
+          while queue:
+              node = queue.popleft()
+              if node: res.append(str(node.val))
+              else: res.append('#')
+              if node:
+                  queue.append(node.left)
+                  queue.append(node.right)
+          return ' '.join(res)        
+  
+      def deserialize(self, data: str) -> TreeNode:
+          """Decodes your encoded data to tree.
+          """
+          data = data.split(' ')
+          if data[0] == '#': return None
+          root = TreeNode(int(data.pop(0)))
+          queue = deque([root])
+          while queue:
+              temp = []
+              for node in queue:
+                  if data:
+                      t = data.pop(0)
+                      if t != '#':
+                          n = TreeNode(t)
+                          temp.append(n)
+                          node.left = n
+                  if data:
+                      t = data.pop(0)
+                      if t != '#':
+                          n = TreeNode(t)
+                          temp.append(n)
+                          node.right = n
+              queue = temp
+          return root
+  ```
+
+- ##### Description
+
+  ```
+  297. Serialize and Deserialize Binary Tree
+  ```
+
+  ##### Solution
+
+  ```python
+  from collections import deque
+  class Codec:
+      def serialize(self, root):
+          """Encodes a tree to a single string.
+          
+          :type root: TreeNode
+          :rtype: str
+          """
+          queue = deque([root])
+          res = []
+          while queue:
+              node = queue.popleft()
+              if not node: res.append('#')
+              else: res.append(str(node.val))
+              if node:
+                  queue.append(node.left)
+                  queue.append(node.right)
+          return ' '.join(res)
+          
+  
+      def deserialize(self, data):
+          """Decodes your encoded data to tree.
+          
+          :type data: str
+          :rtype: TreeNode
+          """
+          # print(data)
+          data = data.split(' ')
+          temp = data.pop(0)
+          root = None
+          if temp == '#': return None
+          else: root = TreeNode(int(temp))
+          queue = [root]
+          while queue:
+              temp = []
+              for node in queue:
+                  if data:
+                      t = data.pop(0)
+                      if t != '#':
+                          n = TreeNode(int(t))
+                          node.left = n
+                          temp.append(n)
+                  if data:
+                      t = data.pop(0)
+                      if t != '#':
+                          n = TreeNode(int(t))
+                          node.right = n
+                          temp.append(n)
+              queue = temp
+          return root
+  ```
+
+- ##### Description
+
+  ```
+  121. Best Time to Buy and Sell Stock
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def maxProfit(self, prices: List[int]) -> int:
+          size = len(prices)
+          if size < 2: return 0
+          max_profit = 0
+          min_price = prices[0]
+          for price in prices[1:]:
+              if price < min_price:
+                  min_price = price
+              else:
+                  max_profit = max(max_profit, price - min_price)
+          return max_profit
+      
+  ##################################################################################
+  follow up：如果job都有权重，如何安排可使总权重最大????????????? how to?
+  ```
+
+- ##### Description
+
+  ```python
+  算组合数，给定n, r，求C(n, r)，我当时忘了C(n, r) = C(n - 1, r) + C(n - 1, r - 1)这个公式
+  ```
+
+  ##### Solution
+
+  ```
+  Dynamic programming: dp[n][r] = dp[n - 1][r] + dp[n - 1][r - 1]
+  ```
+
+- ##### Description
+
+  ```python
+  341. Flatten Nested List Iterator
+  ```
+
+  ##### Solution
+
+  ```python
+  # """
+  # This is the interface that allows for creating nested lists.
+  # You should not implement it, or speculate about its implementation
+  # """
+  #class NestedInteger:
+  #    def isInteger(self) -> bool:
+  #        """
+  #        @return True if this NestedInteger holds a single integer, rather than a nested list.
+  #        """
+  #
+  #    def getInteger(self) -> int:
+  #        """
+  #        @return the single integer that this NestedInteger holds, if it holds a single integer
+  #        Return None if this NestedInteger holds a nested list
+  #        """
+  #
+  #    def getList(self) -> [NestedInteger]:
+  #        """
+  #        @return the nested list that this NestedInteger holds, if it holds a nested list
+  #        Return None if this NestedInteger holds a single integer
+  #        """
+  
+  class NestedIterator:
+      def __init__(self, nestedList: [NestedInteger]):
+          self.res = []
+          self.prepare(nestedList)
+          
+      def next(self) -> int:
+          if not self.hasNext(): return None
+          top = self.res.pop()
+          return top.getInteger()
+          
+          
+          
+      
+      def hasNext(self) -> bool:
+          while self.res and not self.res[-1].isInteger():
+              top = self.res.pop()
+              arr = top.getList()
+              self.prepare(arr)
+          return len(self.res) > 0
+              
+          
+      
+      def prepare(self, nestedList):
+          for i in range(len(nestedList) - 1, -1, -1):
+              self.res.append(nestedList[i])
+  ```
+
+- ##### Description
+
+  ```python
+  ‘5，3，+’-> '5+3'; '4,5,*,+,3,4'-> '(4+5)*（3+4）'
+  ?? What's this?
+  ```
+
+- ##### Description
+
+  ```python
+  第一轮：给一个正整数N，求任意一个长度为 2*N 且满足以下条件的array：
+  * 对于数字1 到 N，每个数出现两次，并且满足相同数字i之间有i个item。
+  比如N = 3， 一个valid的array为：231213。 1和1之间有一个item（2），2和2之间有两个item（3，1）， 3和3之间有三个item（1，2，1
+  ```
+
+  ##### Solution
+
+  ```python
+  class Solution:
+      def __init__(self, N):
+          self.path = [-1] * 2 * N
+  
+      def generate(self, N):
+          self.backtrack(1, N)
+          return self.path
+  
+      def backtrack(self, num, N):
+          if num == N + 1:
+              return True
+          for i in range(N):
+              if self.path[i] == -1 and i + num + 1 < N and self.path[i + num + 1] == -1:
+                  self.path[i] = num
+                  self.path[i + num + 1] = num
+                  if self.backtrack(num + 1, N): return True
+                  self.path[i] = -1
+                  self.path[i + num + 1] = -1
+          return False
+  
+  if __name__ == "__main__":
+      s = Solution(1)
+      r = s.generate(1)
+      print(r)
+  ```
+
+- ##### Description
+
+  ```
+  380. Insert Delete GetRandom O(1)
+  ```
+
+  ##### Solution
+
+  ```python
+  '''
+  The most tricky part is the remove function:
+  1. find the index of the given value in the res list: index = self.dic[value]
+  2. replace the number at the index to the final number: self.res[index] = self.res[-1]
+  3. chage the key value in the dictionary: self.dic[self.res.pop()] = index
+  4. delete the given value from the dictionary: del self.dic[value]
+  '''
+  class RandomizedSet:
+  
+      def __init__(self):
+          """
+          Initialize your data structure here.
+          """
+          self.res = []
+          self.dic = dict()
+          
+  
+      def insert(self, val: int) -> bool:
+          """
+          Inserts a value to the set. Returns true if the set did not already contain the specified element.
+          """
+          if val not in self.dic:
+              self.dic[val] = len(self.res)
+              self.res.append(val)
+              return True
+          return False
+          
+  
+      def remove(self, val: int) -> bool:
+          """
+          Removes a value from the set. Returns true if the set contained the specified element.
+          """
+          if val in self.dic:
+              index = self.dic[val]
+              self.res[index]  = self.res[-1]
+              self.dic[self.res.pop()] = index
+              del self.dic[val]
+              return True
+          return False
+              
+          
+  
+      def getRandom(self) -> int:
+          """
+          Get a random element from the set.
+          """
+          return self.res[random.randint(0, len(self.res) - 1)]
+          
+  
+  
+  # Your RandomizedSet object will be instantiated and called as such:
+  # obj = RandomizedSet()
+  # param_1 = obj.insert(val)
+  # param_2 = obj.remove(val)
+  # param_3 = obj.getRandom()
+  ```
+
+- ##### Description
+
+  ```python
+  200. Number of Islands
+  Follow up: count the number of islands of differet shape???????
+  ```
+
+- ##### Description
+
+  ```
+  reverse the linked list
+  ```
+
+  ##### Solution
+
+  ```python
+  # recursive version
+  class Solution:
+      def reverseList(self, head: ListNode) -> ListNode:
+          if not head: return None
+          if not head.next: return head
+          last = self.reverseList(head.next)
+          head.next.next = head
+          head.next = None
+          return last
+   # iterative version
+   class Solution:
+      def reverseList(self, head: ListNode) -> ListNode:
+          pre, cur, nxt = None, head, head
+          while cur:
+              nxt = cur.next
+              cur.next = pre
+              pre = cur
+              cur = nxt
+          return pre
+   
+  ```
+
+- ##### Description
+
+  ```
+  94. Binary Tree Inorder Traversal
+  ```
+
+  ##### Solution
+
+  ```
+  # recursive version
+  class Solution:
+      def inorderTraversal(self, root: TreeNode) -> List[int]:
+          res = []
+          self.helper(root, res)
+          return res
+      def helper(self, root, res):
+          if root:
+              if root.left:
+                  self.helper(root.left, res)
+              res.append(root.val)
+              if root.right:
+                  self.helper(root.right, res)
+  
+  # iterative version
   
   ```
 
   
-
-
 
 
 
