@@ -1777,7 +1777,7 @@
 
   ##### Solution
 
-  ```
+  ```python
   # recursive version
   class Solution:
       def inorderTraversal(self, root: TreeNode) -> List[int]:
@@ -1793,7 +1793,90 @@
                   self.helper(root.right, res)
   
   # iterative version
+  class Solution:
+      def inorderTraversal(self, root: TreeNode) -> List[int]:
+          stack, res = [], []
+          cur = root
+          while stack or cur:
+              while cur:
+                  stack.append(cur)
+                  cur = cur.left
+              cur = stack.pop()
+              res.append(cur.val)
+              cur = cur.right
+          return res
+   # Morris traverse
   
+  ```
+
+- ##### Description
+
+  ```
+  140. Word Break II
+  ```
+
+  ##### Solution
+
+  ```python
+  # tle version
+  class Solution:
+      
+      def __init__(self):
+          self.trie = {}
+          
+      def construct(self, wordDict):
+          for word in wordDict:
+              t = self.trie
+              for w in word:
+                  t = t.setdefault(w, {})
+              t['#'] = {}
+          
+      def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+          self.construct(wordDict)
+          self.res = []
+          self.dfs(s, [], 0, 0, self.trie)
+          r = []
+          for t in self.res:
+              temp = ' '.join(t)
+              r.append(temp)
+          return r
+          
+      def dfs(self, s, path, start, end, trie):
+          if end == len(s):
+              if '#' in trie:
+                  path.append(s[start : end])
+                  self.res.append(path)
+              return 
+          
+          if '#' in trie:
+              self.dfs(s, path + [s[start : end]], end, end, self.trie)
+              
+          if s[end] in trie:
+              self.dfs(s, path, start, end + 1, trie[s[end]])
+              
+              
+  # backtrack version
+  class Solution:
+      def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+          wordDict = set(wordDict)
+          memo = {}
+          return self.backtrack(s, 0, memo, wordDict)
+      
+      def backtrack(self, s, start, memo, wordDict):
+          if start == len(s): return ['']
+          if start in memo: return memo[start]
+          res = []
+          for end in range(start, len(s)):
+              temp = s[start : end + 1]
+              if temp in wordDict:
+                  left = self.backtrack(s, end + 1, memo, wordDict)
+                  for item in left:
+                      if item:
+                          res.append(temp + ' ' + item)
+                      else:
+                          res.append(temp)
+          memo[start] = res
+          return res
   ```
 
   
