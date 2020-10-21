@@ -1,4 +1,4 @@
-# amazon vo BQ:
+# amazon vo BQ and algo mixed:
 
 1. ```
    问没有足够数据时候如何做的决定，和simplify 难的问题的经验，十五分钟左右。
